@@ -8,7 +8,7 @@ To streamline the execution of userscripts, it's essential to utilize a JavaScri
 Enhance your Blooket experience with the versatile userscript, `blooket.js`
 
 ### Features
-Press `m` to toggle the answer menu and view the current answer.
-Press `space` to clear the answer log swiftly.
-Enable autoclicking by pressing `c`, allowing automatic selection of the correct answer after 1 second.
-Experience enhanced visibility with the `h` key, activating highlighting to distinguish answers in a unique color.
+- Press `m` to toggle the answer menu and view the current answer.
+- Press `space` to clear the answer log.
+- Enable autoclicking by pressing `c`, allowing automatic selection of the correct answer after 1 second.
+- Experience enhanced visibility with the `h` key, activating highlighting to distinguish answers in a unique color.
