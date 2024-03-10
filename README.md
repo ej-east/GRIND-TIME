@@ -1,16 +1,14 @@
-# School Automation
-This is a git repo all about ways to automate the boring work at school. Things that are userscripts, are in the userscripts folder
-
+#School Automation `README.md`
+Welcome to the School Automation repository, your go-to resource for automating mundane tasks in  school.
 
 ## Installing TamperMonkey
-Userscripts should automatically be ran by a JavaScript injector. My choice is [tampermonkey]([url](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) for its easy of use
-after its installed I recommend pinning it. After you pin it, click the icon and chose create script then copy and paste the contents of the JavaScript file into there.
+To streamline the execution of userscripts, it's essential to utilize a JavaScript injector. For seamless integration, I recommend TamperMonkey due to its user-friendly interface and extensive functionality. Once installed, consider pinning TamperMonkey for quick access. Simply click the icon, choose "Create Script," and effortlessly paste the JavaScript file contents into the editor.
 
+### Userscript: blooket.js
+Enhance your Blooket experience with the versatile userscript, 'blooket.js.'
 
-### blooket.js
-`blooket.js` is an userscript that automates blooket.
-#### Features
-- Push `m` to toggle the answer menu to display the current answer
-- Push `space` to clear the answer log
-- Push `c` to toggle autoclicking which automatically clicks the correct answer after 1 second
-- Push `h` to turn on highlighting which highlights the answers in a different color 
+### Features
+Press 'm' to toggle the answer menu and view the current answer.
+Press 'space' to clear the answer log swiftly.
+Enable autoclicking by pressing 'c,' allowing automatic selection of the correct answer after 1 second.
+Experience enhanced visibility with the 'h' key, activating highlighting to distinguish answers in a unique color scheme.
