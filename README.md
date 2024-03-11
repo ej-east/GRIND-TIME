@@ -1,4 +1,4 @@
-# School Automation `README.md`
+# GRIND-TIME `README.md`
 Welcome to the School Automation repository, your go-to resource for automating mundane tasks in  school.
 
 ## Installing TamperMonkey
