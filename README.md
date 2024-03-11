@@ -12,3 +12,12 @@ Enhance your Blooket experience with the versatile userscript, `blooket.js`
 - Press `space` to clear the answer log.
 - Enable autoclicking by pressing `c`, allowing automatic selection of the correct answer after 1 second.
 - Experience enhanced visibility with the `h` key, activating highlighting to distinguish answers in a unique color.
+
+### Userscript: `khan.js`
+Go far in Khan academy with easy, `khan.js`
+
+### Features
+- Automatically enabled highlighting of correct answers
+
+
+  Problem? Email me at `ej@williamelijah.com`
