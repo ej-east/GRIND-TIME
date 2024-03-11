@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Cheats in Blooket
-// @author       You
+// @author       EJ
 // @match        https://*.blooket.com/*
 // @grant        none
 // ==/UserScript==
