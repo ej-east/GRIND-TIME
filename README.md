@@ -20,4 +20,4 @@ Go far in Khan academy with easy, `khan.js`
 - Automatically enabled highlighting of correct answers
 
 
-  Problem? Email me at `ej@williamelijah.com`
+  Problem? Suggestion? Email me at `ej@williamelijah.com`
