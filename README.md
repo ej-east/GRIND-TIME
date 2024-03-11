@@ -14,7 +14,7 @@ Enhance your Blooket experience with the versatile userscript, `blooket.js`
 - Experience enhanced visibility with the `h` key, activating highlighting to distinguish answers in a unique color.
 
 ### Userscript: `khan.js`
-Go far in Khan academy with easy, `khan.js`
+Go far in Khan academy with ease, `khan.js`
 
 ### Features
 - Automatically enabled highlighting of correct answers
