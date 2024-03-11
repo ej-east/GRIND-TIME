@@ -1,5 +1,5 @@
-# GRIND-TIME `README.md`
-Welcome to the School Automation repository, your go-to resource for automating mundane tasks in  school.
+# GRIND-TIME 
+Make your academic comeback 
 
 ## Installing TamperMonkey
 To streamline the execution of userscripts, it's essential to utilize a JavaScript injector. For seamless integration, I recommend TamperMonkey due to its user-friendly interface and extensive functionality. Once installed, consider pinning TamperMonkey for quick access. Simply click the icon, choose "Create Script," and effortlessly paste the JavaScript file contents into the editor.
