@@ -12,6 +12,9 @@
 (function() {
     'use strict';
 
+    const loggedAnswers = new Set(); // Set to store logged answers
+
+
     class Answer {
         constructor(answer, type) {
             this.body = answer;
@@ -37,30 +40,8 @@
         log() {
             this.sanitizeAnswers();
             console.log("Answers:", this.body.join(", "));
-        
-            // Target style string
-            const targetStyle = "padding-left: 12px; text-align: left; flex: 1 1 0%; padding-top: 4px;";
-        
-            // Find all span elements
-            const spans = document.querySelectorAll('span');
-        
-            // Iterate over the spans
-            spans.forEach(span => {
-                // Check if the span has the target style
-                if (span.style.cssText === targetStyle) {
-                    // Check if the span contains the correct answer
-                    this.body.forEach(answer => {
-                        if (span.textContent.includes(answer)) {
-                            // Highlight the span
-                            span.style.backgroundColor = 'rgb(255, 146, 92)';
-                        }
-                    });
-                }
-            });
+            loggedAnswers.add(this.body)
         }
-        
-        
-        
 
         sanitizeAnswers() {
             this.body = this.body.map(ans => {
@@ -69,7 +50,7 @@
                         this.printImage(ans);
                         return "";
                     } else {
-                        return ans.replaceAll("$", "").replaceAll("`","");
+                        return ans.replaceAll("$", "").replaceAll("`","").replaceAll("\n","");
                     }
                 }
             }).filter(Boolean);
@@ -151,4 +132,66 @@
             return res;
         });
     };
+
+    // Event listener for the 'keydown' event
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'h') {
+            // Highlight the correct answer
+            highlightCorrectAnswer(loggedAnswers);
+        }else if(event.key === 'c'){
+            clickCorrectAnswer(loggedAnswers);
+        }
+    });
+
+    function highlightCorrectAnswer(answers) {
+        // Target style string
+        const targetStyle = "padding-left: 12px; text-align: left; flex: 1 1 0%; padding-top: 4px;";
+
+        // Find all span elements
+        const spans = document.querySelectorAll('span');
+
+        // Iterate over the spans
+        spans.forEach(span => {
+            // Check if the span has the target style
+            if (span.style.cssText === targetStyle) {
+                // Check if the span contains the correct answer
+                answers.forEach(answerList => {
+                    answerList.forEach(answer => {
+                        if (span.textContent.includes(answer)) {
+                            // Highlight the span
+                            span.style.backgroundColor = 'rgb(255, 146, 92)';
+                        }
+                    })
+
+                });
+            }
+        });
+    }
+
+    function clickCorrectAnswer(answers) {
+        // Assuming answers is a Set of correct answers
+        // Convert the Set to an array for easier iteration
+        const answersArray = Array.from(answers);
+    
+        // Find all buttons on the page
+        const buttons = document.querySelectorAll('button');
+    
+        // Iterate over each button
+        buttons.forEach(button => {
+            // Check if the button's text content matches any of the correct answers
+            answersArray.forEach(answerChoice => {
+                answerChoice.forEach(answer => {
+                    if (button.textContent.includes(answer)) {
+                        // Simulate a click event on the button
+                        button.click();
+                        console.log("Clicked correct answer:", answer);
+                    }
+                })
+
+            });
+        });
+    }
+    
+
+
 })();

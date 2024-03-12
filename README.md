@@ -17,7 +17,19 @@ Enhance your Blooket experience with the versatile userscript, `blooket.js`
 Go far in Khan academy with ease, `khan.js`
 
 ### Features
-- Automatically enabled highlighting of correct answers
+-  Press `h` to highlight the correct answers
+-  WIP: Press `c` to automatically click the correct answers
+
+
+### Userscript: `edpuzzle.js`
+Automatically solve any edpuzzle, anywhere
+
+> [!CAUTION]
+> Teachers can view how long an edpuzzle takes a student to solve it, so be sure to wait the vidoe time before submitting
+
+### Features
+-  WIP
+
 
 
   Problem? Suggestion? Email me at `ej@williamelijah.com`

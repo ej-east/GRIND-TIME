@@ -9,7 +9,6 @@
 // ==/UserScript==
 
 
-//orignal code from https://greasyfork.org/en/scripts/462957-highlight-answers
 (function() {
     'use strict';
 
