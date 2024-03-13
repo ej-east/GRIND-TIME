@@ -14,6 +14,23 @@
 
     const loggedAnswers = new Set(); // Set to store logged answers
 
+ 
+    const guiContainer = document.createElement('div'); // Create GUI container
+    guiContainer.style.position = 'fixed';
+    guiContainer.style.top = '10px';
+    guiContainer.style.right = '10px';
+    guiContainer.style.padding = '10px';
+    guiContainer.style.background = 'rgba(255, 255, 255, 0.9)';
+    guiContainer.style.border = '1px solid #ccc';
+    guiContainer.style.display = 'block'; // Set display to block to ensure it's on a new line
+    guiContainer.style.width = '300px'; // Set a fixed width for the menu
+    guiContainer.style.height = 'auto'; // Allow the height to adjust based on content
+    guiContainer.style.overflow = 'auto'; 
+    guiContainer.style.marginBottom = '10px'; // Add some space below the menu
+    document.body.appendChild(guiContainer); 
+    guiContainer.style.width = '300px'; // Set a fixed width for the menu
+    guiContainer.style.height = '500px'; // Allow the height to adjust based on content
+    guiContainer.style.overflow = 'auto'; 
 
     class Answer {
         constructor(answer, type) {
@@ -50,7 +67,7 @@
                         this.printImage(ans);
                         return "";
                     } else {
-                        return ans.replaceAll("$", "").replaceAll("`","").replaceAll("\n","");
+                        return ans.replaceAll("$", "").replaceAll("`","");
                     }
                 }
             }).filter(Boolean);
@@ -115,14 +132,47 @@
                 const json = await res.clone().json();
                 const question = JSON.parse(json.data.assessmentItem.item.itemData).question;
 
-                Object.keys(question.widgets).forEach(widgetName => {
-                    const type = widgetTypes[widgetName.split(" ")[0]];
-                    const answer = extractAnswerFromWidget(question.widgets[widgetName], type);
-                    if (answer.length > 0) {
-                        new Answer(answer, type).log();
-                    }
-                });
+            // Assuming you're inside the fetch function where you're processing the answers
+
+            // Create a document fragment to hold the elements
+            const fragment = document.createDocumentFragment();
+
+            // Initialize an empty string to accumulate answers
+            let answersText = "";
+            // Initialize a Set to accumulate unique answers
+            let uniqueAnswers = new Set();
+
+            Object.keys(question.widgets).forEach(widgetName => {
+                const type = widgetTypes[widgetName.split(" ")[0]];
+                const answer = extractAnswerFromWidget(question.widgets[widgetName], type);
+                if (answer.length > 0) {
+                    new Answer(answer, type).log();
+                    
+                    // Add each answer to the Set
+                    answer.forEach(a => uniqueAnswers.add(a+"\n\n"));
+                }
+            });
+
+            // Convert the Set to an array and join the elements into a string
+            // with a newline separator to be added to answersText
+            answersText += Array.from(uniqueAnswers).join("\n ");
+
+
+            // Create a new div element for each answer
+            const answerElement = document.createElement('div');
+            answerElement.id = "answer-key"
+            answerElement.textContent = answersText;
+
+            // Append the answerElement to the fragment
+
+
+            // Finally, append the fragment to the guiContainer
+
+            if (!document.getElementById("answer-key")) {
+                fragment.appendChild(answerElement);
+                guiContainer.appendChild(fragment);
             }
+        }
 
             if (!window.loaded) {
                 console.clear();
@@ -140,6 +190,8 @@
             highlightCorrectAnswer(loggedAnswers);
         }else if(event.key === 'c'){
             clickCorrectAnswer(loggedAnswers);
+        } else if (event.key === 'm'){
+            guiContainer.style.display = guiContainer.style.display === 'none' ? 'block' : 'none';
         }
     });
 
@@ -191,7 +243,5 @@
             });
         });
     }
-    
-
 
 })();
