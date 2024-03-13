@@ -8,19 +8,7 @@
 // @grant        none
 // ==/UserScript==
 
-
-console.log("Initializing.");
-init();
-
-var popup = null;
-var base_url;
-if (typeof document.dev_env != "undefined") {
-  base_url = document.dev_env;
-}
-else {
-  //get resources off of github to not inflate the jsdelivr stats
-  base_url = "https://raw.githubusercontent.com/ading2210/edpuzzle-answers/main";
-}
+var assignment = null;
 
 function http_get(url, callback, headers=[], method="GET", content=null) {
   var request = new XMLHttpRequest();
@@ -37,68 +25,7 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
   request.send(content);
 }
 
-function init() {
-  if (window.location.hostname == "edpuzzle.hs.vc") {
-    alert("To use this, drag this button into your bookmarks bar. Then, run it when you're on an Edpuzzle assignment.");
-  }
-  else if ((/https{0,1}:\/\/edpuzzle.com\/assignments\/[a-f0-9]{1,30}\/watch/).test(window.location.href)) {
-    getAssignment();
-  }
-  else if (window.canvasReadyState) {
-    handleCanvasURL();
-  }
-  else if (window.schoologyMoreLess) {
-    handleSchoologyURL();
-  }
-  else {
-    alert("Please run this script on an Edpuzzle assignment. For reference, the URL should look like this:\nhttps://edpuzzle.com/assignments/{ASSIGNMENT_ID}/watch");
-  }
-}
-
-function handleCanvasURL() {
-  let location_split = window.location.href.split("/");
-  let url = `/api/v1/courses/${location_split[4]}/assignments/${location_split[6]}`;
-  http_get(url, function(){
-    let data = JSON.parse(this.responseText);
-    let url2 = data.url;
-
-    http_get(url2, function() {
-      let data = JSON.parse(this.responseText);
-      let url3 = data.url;
-
-      alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Canvas and try again.`);
-      open(url3);
-    });
-  });
-}
-
-function handleSchoologyURL() {
-  let assignment_id = window.location.href.split("/")[4];
-  let url = `/external_tool/${assignment_id}/launch/iframe`;
-  http_get(url, function() {
-    alert(`Please re-run this script in the newly opened tab. If nothing happens, then allow popups on Schoology and try again.`);
-
-    //strip js tags from response and add to dom
-    let html = this.responseText.replace(/<script[\s\S]+?<\/script>/, ""); 
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    let form = div.querySelector("form");
-    
-    let input = document.createElement("input")
-    input.setAttribute("type", "hidden");
-    input.setAttribute("name", "ext_submit");
-    input.setAttribute("value", "Submit");
-    form.append(input);
-    document.body.append(div);
-
-    //submit form in new tab
-    form.setAttribute("target", "_blank");
-    form.submit();
-    div.remove();
-  });
-}
-
-function getAssignment(callback) {
+function getAssignment(csrf, assignment) {
   var assignment_id = window.location.href.split("/")[4];
   if (typeof assignment_id == "undefined") {
     alert("Error: Could not infer the assignment ID. Are you on the correct URL?");
@@ -109,7 +36,8 @@ function getAssignment(callback) {
   http_get(url1, function(){
     var assignment = JSON.parse(this.responseText);
     if ((""+this.status)[0] == "2") {
-      openPopup(assignment);
+      this.assignment = assignment;
+      getMedia(csrf, assignment);
     }
     else {
       alert(`Error: Status code ${this.status} recieved when attempting to fetch the assignment data.`)
@@ -117,143 +45,128 @@ function getAssignment(callback) {
   });
 }
 
-function openPopup(assignment) {
-  var media = assignment.medias[0];
-  var teacher_assignment = assignment.teacherAssignments[0];
-  var assigned_date = new Date(teacher_assignment.preferences.startDate);
-  var date = new Date(media.createdAt);
-  thumbnail = media.thumbnailURL;
-  if (thumbnail.startsWith("/")) {
-    thumbnail = "https://"+window.location.hostname+thumbnail;
+function httpGet(url, callback, headers=[], method="GET", content=null) {
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", callback);
+  request.open(method, url, true);
+  if (window.__EDPUZZLE_DATA__ && window.__EDPUZZLE_DATA__.token) {
+    headers.push(["authorization", window.__EDPUZZLE_DATA__.token]);
   }
-  
-  var deadline_text;
-  if (teacher_assignment.preferences.dueDate == "") {
-    deadline_text = "no due date"
+  for (const header of headers) {
+    request.setRequestHeader(header[0], header[1]);
   }
-  else {
-    deadline_text = "due on "+(new Date(teacher_assignment.preferences.dueDate)).toDateString();
-  }
-  
-  var base_html = `
-  <!DOCTYPE html>
-  <head>
-    <style>
-      * {font-family: Arial}
-    </style>
-    <script>
-      var base_url = "${base_url}";
-      function http_get(url, callback) {
-        var request = new XMLHttpRequest();
-        request.addEventListener("load", callback);
-        request.open("GET", url, true);
-        request.send();
-      }
-      function get_tag(tag, url) {
-        console.log("Loading "+url);
-        http_get(url, function(){
-          if ((""+this.status)[0] == "2") {
-            var element = document.createElement(tag);
-            element.innerHTML = this.responseText;
-            document.getElementsByTagName("head")[0].appendChild(element);
-          }
-          else {
-            console.error("Could not fetch "+url);
-          }
-        });
-      }
-      get_tag("style", base_url+"/app/popup.css");
-      get_tag("script", base_url+"/app/popup.js");
-      get_tag("script", base_url+"/app/videooptions.js");
-      get_tag("script", base_url+"/app/videospeed.js");
-    </script>
-    <title>Answers for: ${media.title}</title>
-  </head>
-  <div id="header_div">
-    <div>
-      <img src="${thumbnail}" height="108px">
-    </div>
-    <div id="title_div">
-      <p style="font-size: 16px"><b>${media.title}</b></h2>
-      <p style="font-size: 12px">Uploaded by ${media.user.name} on ${date.toDateString()}</p>
-      <p style="font-size: 12px">Assigned on ${assigned_date.toDateString()}, ${deadline_text}</p>
-      <p style="font-size: 12px">Correct choices are <u>underlined</u>.</p>
-      <input id="skipper" type="button" value="Skip Video" onclick="skip_video();" disabled/>
-      <input id="answers_button" type="button" value="Answer Questions" onclick="answer_questions();" disabled/>
-      <div id="speed_container" hidden>
-        <label style="font-size: 12px" for="speed_dropdown">Video speed:</label>
-        <select name="speed_dropdown" id="speed_dropdown" onchange="video_speed()">
-          <option value="0.25">0.25</option>
-          <option value="0.5">0.5</option>
-          <option value="0.75">0.75</option>
-          <option value="1" selected>Normal</option>
-          <option value="1.25">1.25</option>
-          <option value="1.5">1.5</option>
-          <option value="1.75">1.75</option>
-          <option value="2">2</option>
-          <option value="-1">Custom</option>
-        </select>
-        <label id="custom_speed_label" style="font-size: 12px" for="custom_speed"></label>
-        <input type="range" id="custom_speed" name="custom_speed" value="1" min="0.1" max="16" step="0.1" oninput="video_speed()" hidden>
-      </div>
-      <div id="options_container">
-        <label for="pause_on_focus" style="font-size: 12px">Don't pause on unfocus: </label>
-        <input type="checkbox" id="pause_on_focus" name="pause_on_focus" onchange="toggle_unfocus();">
-      </div>
-    </div>
-  </div>
-  <hr>
-  <div id="content"> 
-    <p style="font-size: 12px" id="loading_text"></p>
-  </div>
-  <hr>
-  <p style="font-size: 12px">Made by: <a target="_blank" href="https://github.com/ading2210">ading2210</a> on Github | Website: <a target="_blank" href="https://edpuzzle.hs.vc">edpuzzle.hs.vc</a> | Source code: <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers">ading2210/edpuzzle-answers</a></p>
-  <p style="font-size: 12px">Licenced under the <a target="_blank" href="https://github.com/ading2210/edpuzzle-answers/blob/main/LICENSE">GNU GPL v3</a>. Do not reupload or redistribute without abiding by those terms.</p>
-  <p style="font-size: 12px">Available now from our <a target="_blank" href="https://edpuzzle.hs.vc/discord.html">Discord server</a>: <i> An open beta of a completely overhauled GUI, with proper mobile support, ChatGPT integration for open-ended questions, and more. </i></p>`;
-  popup = window.open("about:blank", "", "width=600, height=400");
-  popup.document.write(base_html);
-
-  popup.document.assignment = assignment;
-  popup.document.dev_env = document.dev_env;
-  popup.document.edpuzzle_data = window.__EDPUZZLE_DATA__;
-  
-  getMedia(assignment);
+  request.send(content);
 }
 
-function getMedia(assignment) {
-  var text = popup.document.getElementById("loading_text");
-  text.innerHTML = `Fetching assignments...`;
-  
-  var media_id = assignment.teacherAssignments[0].contentId;
-  var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
-
-  fetch(url2, {credentials: "omit"})
-    .then(response => {
-      if (!response.ok) {
-        var text = popup.document.getElementById("loading_text");
-        var content = popup.document.getElementById("content");
-        popup.document.questions = questions;
-        text.remove();
-        content.innerHTML += `Error: Status code ${response.status} received when attempting to fetch the answers.`;
-      }
-      else return response.json();
-    })
-    .then(media => {
-      parseQuestions(media.questions);
-    })
+function init() {
+  getCSRF();
 }
 
-function parseQuestions(questions) {
-  var text = popup.document.getElementById("loading_text");
-  var content = popup.document.getElementById("content");
-  popup.document.questions = questions;
-  text.remove();
+function getCSRF() {
+  var csrfURL = "https://edpuzzle.com/api/v3/csrf";
+  httpGet(csrfURL, function(){
+    var data = JSON.parse(this.responseText);
+    var csrf = data.CSRFToken;
+    getAssignment(csrf);
+  });
+}
 
-  if (questions == null) {
-    content.innerHTML += `<p style="font-size: 12px">Error: Could not get the media for this assignment. </p>`;
-    return;
+function getAttempt(csrf, assignment, questions) {
+  var id = assignment.teacherAssignments[0]._id;
+  var attemptURL = "https://edpuzzle.com/api/v3/assignments/"+id+"/attempt";
+  httpGet(attemptURL, function(){
+    var data = JSON.parse(this.responseText);
+    skipVideo(csrf, data, questions, assignment);
+  });
+}
+
+function skipVideo(csrf, attempt, questions, assignment) {
+  var id = attempt._id;
+  var teacher_assignment_id = attempt.teacherAssignmentId;
+  var referrer = "https://edpuzzle.com/assignments/"+teacher_assignment_id+"/watch";;
+  var url2 = "https://edpuzzle.com/api/v4/media_attempts/"+id+"/watch";
+
+  var content = {"timeIntervalNumber": 10};
+  var headers = [
+    ['accept', 'application/json, text/plain, */*'],
+    ['accept_language', 'en-US,en;q=0.9'],
+    ['content-type', 'application/json'],
+    ['x-csrf-token', csrf],
+    ['x-edpuzzle-referrer', referrer],
+    ['x-edpuzzle-web-version', window.__EDPUZZLE_DATA__.version]
+  ];
+  
+  httpGet(url2, function(){
+    var attemptId = attempt._id;
+    var filteredQuestions = [];
+    
+    for (let i=0; i<questions.length; i++) {
+      let question = questions[i];
+      if (question.type != "multiple-choice") {continue;}
+      
+      if (filteredQuestions.length == 0) {
+        filteredQuestions.push([question]);
+      }
+      else if (filteredQuestions[filteredQuestions.length-1][0].time == question.time) {
+        filteredQuestions[filteredQuestions.length-1].push(question);
+      }
+      else {
+        filteredQuestions.push([question]);
+      }
+    }
+    
+    if (filteredQuestions.length > 0) {
+      var total = filteredQuestions.length;
+      postAnswers(csrf, assignment, filteredQuestions, attemptId, total);
+    }
+  }, headers, "POST", JSON.stringify(content));
+}
+
+function postAnswers(csrf, assignment, remainingQuestions, attemptId, total) {
+  var id = assignment.teacherAssignments[0]._id;
+  var referrer = "https://edpuzzle.com/assignments/"+id+"/watch";
+  var answersURL = "https://edpuzzle.com/api/v3/attempts/"+attemptId+"/answers";
+
+  var content = {answers: []};
+  var now = new Date().toISOString();
+  var questionsPart = remainingQuestions.shift();
+  for (let i=0; i<questionsPart.length; i++) {
+    let question = questionsPart[i];
+    let correctChoices = [];
+    for (let j=0; j<question.choices.length; j++) {
+      let choice = question.choices[j];
+      if (choice.isCorrect) {
+        correctChoices.push(choice._id)
+      }
+    }
+    content.answers.push({
+      "questionId": question._id,
+      "choices": correctChoices,
+      "type": "multiple-choice",
+    });
   }
   
+  var headers = [
+    ['accept', 'application/json, text/plain, */*'],
+    ['accept_language', 'en-US,en;q=0.9'],
+    ['content-type', 'application/json'],
+    ['x-csrf-token', csrf],
+    ['x-edpuzzle-referrer', referrer],
+    ['x-edpuzzle-web-version', window.__EDPUZZLE_DATA__.version]
+  ];
+  httpGet(answersURL, function() {
+    if (remainingQuestions.length == 0) {
+      window.location.reload();
+    }
+    else {
+      postAnswers(csrf, assignment, remainingQuestions, attemptId, total);
+    }
+  }, headers, "POST", JSON.stringify(content));
+}
+
+function parseQuestions(csrf, assignment, questions) {  
+  console.log(questions)
+
   var question;
   var counter = 0;
   var counter2 = 0;
@@ -266,85 +179,24 @@ function parseQuestions(questions) {
      }
     }
   }
-  
-  for (let i=0; i<questions.length; i++) {
-    question = questions[i];
-    let choices_lines = [];
-    
-    if (typeof question.choices != "undefined") {
-      let min = Math.floor(question.time/60).toString();
-      let secs = Math.floor(question.time%60).toString();
-      if (secs.length == 1) {
-        secs = "0"+secs;
-      }
-      let timestamp = min+":"+secs;
-      let question_content;
-      if (question.body[0].text != "") {
-        question_content = `<p>${question.body[0].text}</p>`;
-      }
-      else {
-        question_content = question.body[0].html;
-      }
 
-      let answer_exists = false;
-      for (let j=0; j<question.choices.length; j++) {
-        let choice = question.choices[j];
-        if (typeof choice.body != "undefined") {
-          counter++;
-          let item_html;
-          if (choice.body[0].text != "") {
-            item_html = `<p>${choice.body[0].text}</p>`;
-          }
-          else {
-            item_html = `${choice.body[0].html}`;
-          }
-          if (choice.isCorrect == true) {
-            choices_lines.push(`<li class="choice choice-correct">${item_html}</li>`);
-            answer_exists = true;
-          }
-          else {
-            choices_lines.push(`<li class="choice">${item_html}</li>`);
-          }
-        }
-      }
-      if (!answer_exists) continue;
-      
-      let choices_html = choices_lines.join("\n");
-      let table = ``
-      if (counter2 != 0) {
-        table += `<hr>`;
-      }
-      table += `
-      <table>
-        <tr class="header no_vertical_margin">
-          <td class="timestamp_div no_vertical_margin">
-            <p>[${timestamp}]</p>
-          </td>
-          <td class="question">
-            ${question_content}
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <ul style="margin-top: 6px; margin-bottom: 0px; padding-left: 18px;">
-              ${choices_html}
-            </ul>
-          </td>
-        </tr>
-      </table>
-      `;
-      
-      content.innerHTML += table;
-      counter2++;
-    }
-  }
-  popup.document.getElementById("skipper").disabled = false;
-  if (counter == 0 || counter2 == 0) {
-    content.innerHTML += `<p style="font-size: 12px">No valid multiple choice questions were found.</p>`;
-  }
-  else {
-    popup.document.getElementById("answers_button").disabled = false;
-  }
-  popup.questions = questions;
+  getAttempt(csrf, assignment, questions);
 }
+
+function getMedia(crsf, assignment) {
+  var media_id = assignment.teacherAssignments[0].contentId;
+  var url2 = `https://edpuzzle.com/api/v3/media/${media_id}`;
+
+  fetch(url2, {credentials: "omit"})
+    .then(response => {
+       return response.json();
+    })
+    .then(media => {
+      parseQuestions(crsf, assignment, media.questions);
+    })
+}
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'c') {
+    init();
+  }
+});
