@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net
 // @version      0.1
 // @description  Bruteforce spanish dictionary automatically :)
-// @author       FB
+// @author       Hallway
 // @match        https://www.spanishdict.com/assignments/*
 // @grant        none
 // ==/UserScript==
@@ -76,6 +76,8 @@ setInterval(() => {
         if (answer) {
             console.log("Answer: " + answer.textContent);
             // TODO: If you can figure out how to submit the damn answer, LMK!
+            inputElement.value = answer.textContent;
+            console.log(inputElement)
         }
     }
 }, 1000);

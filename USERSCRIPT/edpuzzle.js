@@ -3,19 +3,14 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Edpuzzle cheat.
-// @author       EJ & FB
+// @author       EJ & Hallway 
 // @match      https://edpuzzle.com/assignments/*
 // @grant        none
 // ==/UserScript==
 
-(() => {
-    'use strict';
 
-    console.log("Initializing.");
-    setInterval(() => {
-        init();
-    }, 1000);
-
+console.log("Initializing.");
+init();
 
 var popup = null;
 var base_url;
@@ -353,4 +348,3 @@ function parseQuestions(questions) {
   }
   popup.questions = questions;
 }
-});
