@@ -30,6 +30,12 @@ Automatically solve any edpuzzle, anywhere
 ### Features
 -  WIP
 
+### Userscript: `spanish__dict.js`
+With `spanish__dict.js` solve Spanish Dictionary, fast.
+
+### Features
+- WIP: Auto answer fill in the blank questions
+- Auto answer multiple choice questions
 
 
   Problem? Suggestion? Email me at `ej@williamelijah.com`
