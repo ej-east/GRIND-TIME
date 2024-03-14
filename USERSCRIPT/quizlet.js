@@ -25,7 +25,7 @@ function getQuizletCode(code) {
 
 function getAnswers() {
         // Select all the terms
-        const termElements = doc.querySelectorAll('.SetPageTerms-term');
+        const termElements = document.querySelectorAll('.SetPageTerms-term');
         const termsArray = [];
 
         termElements.forEach(termElement => {
@@ -47,11 +47,11 @@ function getAnswers() {
             // Add the object to the terms array
             termsArray.push(termObj);
         });
-        console.log(termsJSON);
+        console.log(termsArray);
 }
 
 if (!openTab) {
-    getQuizletCode("MCZN3F")
+    getAnswers();
     openTab = true;
 }
 
@@ -59,5 +59,8 @@ setInterval(() => {
     console.log(document.URL)
 
     const promptElement = document.querySelector('.StudentPrompt-text');
-    console.log(promptElement.textContent);
+
+    if (promptElement) {
+        console.log(promptElement.textContent);
+    }
 }, 1000);

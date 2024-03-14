@@ -40,6 +40,7 @@ With `spanish__dict.js` solve Spanish Dictionary, fast.
 ### Features
 - WIP: Auto-answer fill-in-the-blank questions
 - Auto answer multiple choice questions
+- Auto answer grammar questions
 
 
 ### Userscript: `quizlet.js`
