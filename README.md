@@ -19,7 +19,7 @@ Go far in Khan academy with ease, `khan.js`
 ### Features
 -  Press `h` to highlight the correct answers
 -  Press `m` to show a menu containing answers
-- ~~ WIP: Press `c` to automatically click the correct answers~~ Khan Academny blocks `.click()`
+- ~~WIP: Press `c` to automatically click the correct answers~~ Khan Academny blocks `.click()`
 
 
 
@@ -40,6 +40,14 @@ With `spanish__dict.js` solve Spanish Dictionary, fast.
 ### Features
 - WIP: Auto answer fill in the blank questions
 - Auto answer multiple choice questions
+
+
+### Userscript: `quizlet.js`
+Navigate quizlet with easy using `quizlet.js`
+
+### Features
+- WIP
+
 
 
   Problem? Suggestion? Email me at `ej@williamelijah.com`
