@@ -27,10 +27,7 @@
     guiContainer.style.height = 'auto'; // Allow the height to adjust based on content
     guiContainer.style.overflow = 'auto'; 
     guiContainer.style.marginBottom = '10px'; // Add some space below the menu
-    document.body.appendChild(guiContainer); 
-    guiContainer.style.width = '300px'; // Set a fixed width for the menu
-    guiContainer.style.height = '500px'; // Allow the height to adjust based on content
-    guiContainer.style.overflow = 'auto'; 
+    document.body.appendChild(guiContainer);
 
     class Answer {
         constructor(answer, type) {
@@ -100,7 +97,27 @@
             });
         }
     }
-
+    function removeDuplicateDivs(container) {
+        // Create a map to store unique content and their corresponding elements
+        const uniqueContentMap = new Map();
+    
+        // Iterate over each child of the container
+        Array.from(container.children).forEach(child => {
+            const content = child.textContent; // Assuming the content is what makes the div unique
+    
+            // If the content is not in the map, add it along with the element
+            if (!uniqueContentMap.has(content)) {
+                uniqueContentMap.set(content, child);
+            } else {
+                // If the content is already in the map, it's a duplicate, so remove the current child
+                child.remove();
+            }
+        });
+    }
+    
+    // Call the function to remove duplicates from the guiContainer
+    removeDuplicateDivs(guiContainer);
+    
     function extractAnswerFromWidget(widget, type) {
         if (widget.options && widget.options.answers) {
             return widget.options.answers
@@ -135,43 +152,49 @@
             // Assuming you're inside the fetch function where you're processing the answers
 
             // Create a document fragment to hold the elements
-            const fragment = document.createDocumentFragment();
+           // Assuming you're inside the fetch function where you're processing the answers
 
-            // Initialize an empty string to accumulate answers
-            let answersText = "";
-            // Initialize a Set to accumulate unique answers
-            let uniqueAnswers = new Set();
+// Create a document fragment to hold the elements
+// Assuming you're inside the fetch function where you're processing the answers
 
-            Object.keys(question.widgets).forEach(widgetName => {
-                const type = widgetTypes[widgetName.split(" ")[0]];
-                const answer = extractAnswerFromWidget(question.widgets[widgetName], type);
-                if (answer.length > 0) {
-                    new Answer(answer, type).log();
-                    
-                    // Add each answer to the Set
-                    answer.forEach(a => uniqueAnswers.add(a+"\n\n"));
-                }
-            });
+// Create a document fragment to hold the elements
+const fragment = document.createDocumentFragment();
 
-            // Convert the Set to an array and join the elements into a string
-            // with a newline separator to be added to answersText
-            answersText += Array.from(uniqueAnswers).join("\n ");
+// Initialize a Set to accumulate unique answers
+let uniqueAnswers = new Set();
+let alreadyUsed = new Set();
 
+Object.keys(question.widgets).forEach(widgetName => {
+    const type = widgetTypes[widgetName.split(" ")[0]];
+    const answer = extractAnswerFromWidget(question.widgets[widgetName], type);
+    if (answer.length > 0) {
+        new Answer(answer, type).log();
+        
+        // Add each answer to the Set
+        answer.forEach(a => uniqueAnswers.add(a));
+    }
+});
 
-            // Create a new div element for each answer
+// Check if the answer key div already exists
+if (!document.getElementById("answer-key")) {
+    // Iterate over the unique answers and create a new div for each
+    uniqueAnswers.forEach(answer => {
+        if(!alreadyUsed.has(answer)){
             const answerElement = document.createElement('div');
-            answerElement.id = "answer-key"
-            answerElement.textContent = answersText;
+            answerElement.textContent = answer.replaceAll("$", "").replaceAll("`","");
+            alreadyUsed.add(answer)
+            fragment.appendChild(answerElement);
+        }
 
-            // Append the answerElement to the fragment
+    });
+
+    // Append the fragment to the guiContainer
+    guiContainer.appendChild(fragment);
+
+    removeDuplicateDivs(guiContainer)
+}
 
 
-            // Finally, append the fragment to the guiContainer
-
-            if (!document.getElementById("answer-key")) {
-                fragment.appendChild(answerElement);
-                guiContainer.appendChild(fragment);
-            }
         }
 
             if (!window.loaded) {
