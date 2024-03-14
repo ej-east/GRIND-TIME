@@ -18,7 +18,9 @@ Go far in Khan academy with ease, `khan.js`
 
 ### Features
 -  Press `h` to highlight the correct answers
--  WIP: Press `c` to automatically click the correct answers
+-  Press `m` to show a menu containing answers
+- ~~ WIP: Press `c` to automatically click the correct answers~~ Khan Academny blocks `.click()`
+
 
 
 ### Userscript: `edpuzzle.js`
@@ -28,7 +30,9 @@ Automatically solve any edpuzzle, anywhere
 > Teachers can view how long an edpuzzle takes a student to solve it, so be sure to wait the vidoe time before submitting
 
 ### Features
--  WIP
+-  Press `c` to complete all multiple choice answer questions
+-  Works in canvas and schology
+  
 
 ### Userscript: `spanish__dict.js`
 With `spanish__dict.js` solve Spanish Dictionary, fast.
