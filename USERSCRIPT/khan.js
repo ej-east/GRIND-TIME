@@ -243,6 +243,8 @@ if (!document.getElementById("answer-key")) {
         });
     }
 
+
+    //FIXME: could not be possible 
     function clickCorrectAnswer(answers) {
         // Assuming answers is a Set of correct answers
         // Convert the Set to an array for easier iteration
