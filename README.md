@@ -34,11 +34,11 @@ Automatically solve any edpuzzle, anywhere
 -  Works in canvas and schology
   
 
-### Userscript: `spanish__dict.js`
+### Userscript: `spanish_dict.js`
 With `spanish__dict.js` solve Spanish Dictionary, fast.
 
 ### Features
-- WIP: Auto-answer fill-in-the-blank questions
+- Auto-answer fill-in-the-blank questions press space and enter to answer.
 - Auto answer multiple choice questions
 - Auto answer grammar questions
 
