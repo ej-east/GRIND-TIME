@@ -8,4 +8,3 @@
 // @grant        none
 // ==/UserScript==
 
-// TODO: Figure out of this is even possible to do.
