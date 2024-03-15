@@ -35,7 +35,7 @@ Automatically solve any edpuzzle, anywhere
   
 
 ### Userscript: `spanish_dict.js`
-With `spanish__dict.js` solve Spanish Dictionary, fast.
+With `spanish_dict.js` solve Spanish Dictionary, fast.
 
 ### Features
 - Auto-answer fill-in-the-blank questions press space and enter to answer.
