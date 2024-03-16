@@ -4,7 +4,7 @@
 // @version      2024-03-15
 // @description  Quizlet Match Solver
 // @author       EJ
-// @match        https://quizlet.com/*
+// @match        https://quizlet.com/*/match*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=quizlet.com
 // @grant        none
 // ==/UserScript==
@@ -17,10 +17,6 @@ var element;
 var usedColors = [];
 
 (function() {
-    'use strict';
-
-
-
 
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
@@ -44,13 +40,30 @@ var usedColors = [];
         });
     };
 
+    // MutationObserver to watch for changes in the DOM
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'subtree') {
+                answerMap.forEach(element => {
+                    findTextInHTML(element[0], element[1]);
+                });
+            }
+        });
+    });
+
+    // Configuration of the MutationObserver
+    var config = { attributes: false, childList: true, subtree: true };
+
+    // Start observing the target node
+    observer.observe(document.body, config);
+
     function findTextInHTML(one, two) {
-        var elements = document.querySelectorAll('div.tqy0hun .FormattedText'); // Select elements with class "FormattedText" inside divs with class "tqy0hun"
-        var colorIndex = -1; // Initialize color index
+        var elements = document.querySelectorAll('div.tqy0hun .FormattedText');
+        var colorIndex = -1;
         for (var i = 0; i < colors.length; i++) {
             if (!usedColors.includes(i)) {
                 colorIndex = i;
-                usedColors.push(i); // Mark color as used
+                usedColors.push(i);
                 break;
             }
         }
@@ -65,14 +78,11 @@ var usedColors = [];
                     two = two.slice(0, 100);
                 }
                 
-                // Check the sliced text content of the element against 'one' and 'two'
                 if (text.includes(one) || text.includes(two)) {
                     element.style.backgroundColor = colors[colorIndex];
                 }
             });
         }
     }
-    
-
 
 })();
