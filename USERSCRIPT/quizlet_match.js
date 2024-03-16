@@ -9,7 +9,18 @@
 // @grant        none
 // ==/UserScript==
 
-var colors = ["#FF0000", "#FF6600", "#FFFF00", "#00FF00", "#00FFFF", "#0033FF", "#CC00FF", "#6E0DD0", "#C0C0C0", "#FFFFFF", "#A52A2A", "#F6CFFF", "#CFD9FF", "#FBFFA3", "#FFD1A3", "#710000", "#FF1493", "#8A2BE2", "#7FFF00", "#FF4500", "#191970"];
+//var colors = ["#FF0000", "#FF6600", "#FFFF00", "#00FF00", "#00FFFF", "#0033FF", "#CC00FF", "#6E0DD0", "#C0C0C0", "#FFFFFF", "#A52A2A", "#F6CFFF", "#CFD9FF", "#FBFFA3", "#FFD1A3", "#710000", "#FF1493", "#8A2BE2", "#7FFF00", "#FF4500", "#191970"];
+var colors = ["#f4dbd6", "#f0c6c6", 
+              "#f5bde6", "#c6a0f6", 
+              "#ed8796", "#ee99a0", 
+              "#f5a97f", "#eed49f",
+              "#a6da95", "#8bd5ca",
+              "#91d7e3", "#7dc4e4",
+              "#8aadf4", "#b7bdf8",
+              "#f5d1ff", "#d1c5ff",
+              "#ffbeec"
+            ];
+
 
 var answerMap = [];
 var itemID;
