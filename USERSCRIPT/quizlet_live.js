@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Quizlet live cheat.
 // @author       Hallway || .5 Elijah
-// @match        https://quizlet.com/*
+// @match        https://quizlet.com/live
 // @grant    GM_openInTab
 // @grant    GM_setValue
 // ==/UserScript==
@@ -54,16 +54,16 @@ setInterval(() => {
     // Initialize a variable to hold the full game code
     var fullGameCode = '';
     
-    if (gameCodeInputs && this.gameCode.length != 6) {
+    if (gameCodeInputs && (!this.gameCode || this.gameCode.length != 6)) {
         // Loop through each input element and concatenate its value
         gameCodeInputs.forEach(function(input) {
             fullGameCode += input.value;
         });
-
-        this.gameCode = fullGameCode.replaceAll('-', '');
+        
+        this.gameCode = fullGameCode;
         if (this.gameCode.length == 6) {
           hasCode = true;
-          getQuizletCode(gameCode);
+          getQuizletCode(this.gameCode);
         }
     }
 
@@ -83,7 +83,7 @@ setInterval(() => {
                 // Loop through each element
                 answerOptions.forEach(function(option) {
                     if (option.textContent == answer) {
-                        option.style.color = "red";
+                        option.style.color = "rgb(255, 146, 92)"
                         if (autoAnswer) {
                             option.click();
                         }
