@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Quizlet live cheat.
-// @author       Hallway
+// @author       Hallway || .5 Elijah
 // @match        https://quizlet.com/*
 // @grant    GM_openInTab
 // @grant    GM_setValue
@@ -11,8 +11,11 @@
 
 var itemID = 0;
 var hasCode = false;
+var gameCode = ""
 var openTab = false;
-var answerMap = []
+var autoAnswer = false;
+var turboMode = false;
+let answerMap = {}
 
 function getQuizletCode(code) {
     fetch(
@@ -21,6 +24,7 @@ function getQuizletCode(code) {
       .then((e) => e.text())
       .then((res) => {
         let stuff = JSON.parse(res);
+        console.log(stuff);
         itemID = stuff.gameInstance.itemId;
         element = document.createElement("iframe");
         element.src = "https://quizlet.com/" + itemID;
@@ -28,27 +32,74 @@ function getQuizletCode(code) {
         element.style.display = "none";
         document.body.appendChild(element);
         document.getElementById("quiz").onload = function () {
-          spans = document.getElementById("quiz").contentDocument.querySelectorAll(".TermText");
-          this.answerMap = [...spans].flatMap((_0x44d067, _0x95d6e6, _0x4e8928) => _0x95d6e6 % 2 ? [] : [_0x4e8928.slice(_0x95d6e6, _0x95d6e6 + 2)]).map(_0x469100 => [_0x469100[0].textContent, _0x469100[1].textContent]);
+            var spans = document.getElementById("quiz").contentDocument.querySelectorAll(".TermText");
+            answerMap = {}; // Use an object instead of a Map
+            Array.from(spans).forEach((cur, idx, arr) => {
+                if (idx % 2 === 0) {
+                    answerMap[cur.textContent] = arr[idx + 1].textContent;
+                }
+            });
+            console.log(answerMap);
         };
     });
 }
 
-function getAnswers() {
-
-}
-
-if (!openTab) {
-    getQuizletCode("M8OXEB");
-    openTab = true;
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
 }
 
 setInterval(() => {
-    const gameCode = document.querySelector("input[aria-label=\"Game code\"]");
-    if (gameCode && gameCode.length != 6) {
-        _0x310496 = _0x51b813.value.replaceAll('-', '');
-        if (_0x310496.length == 6) {
-          _0x411bc2 = true;
+    var gameCodeInputs = document.querySelectorAll('input[aria-label="Game code"]');
+
+    // Initialize a variable to hold the full game code
+    var fullGameCode = '';
+    
+    if (gameCodeInputs && this.gameCode.length != 6) {
+        // Loop through each input element and concatenate its value
+        gameCodeInputs.forEach(function(input) {
+            fullGameCode += input.value;
+        });
+
+        this.gameCode = fullGameCode.replaceAll('-', '');
+        if (this.gameCode.length == 6) {
+          hasCode = true;
+          getQuizletCode(gameCode);
         }
-      }
-});
+    }
+
+    if (answerMap.length != 0) {
+        const promptElement = document.querySelector('.StudentPrompt-text');
+
+        if (promptElement) {
+            var answer = answerMap[promptElement.textContent];
+
+            // This is indeed a very rare moment when the teacher decides to switch the terms around. We have to reverse the lookup. Performance go BRRRRRRRRRRR
+            if (!answer) {
+                answer = getKeyByValue(answerMap, promptElement.textContent);
+            }
+
+            if (answer) {
+                var answerOptions = document.querySelectorAll('.StudentAnswerOption-text');
+                // Loop through each element
+                answerOptions.forEach(function(option) {
+                    if (option.textContent == answer) {
+                        option.style.color = "red";
+                        if (autoAnswer) {
+                            option.click();
+                        }
+                    }
+                });
+            }
+        }
+    } 
+}, 50); // Run every 50 ms for slow computers.
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'c') {
+        autoAnswer = !autoAnswer;
+    }
+    if (event.key === "t") {
+        // TODO: Add turbo mode?
+        turboMode = !turboMode;
+    }
+  });
