@@ -44,10 +44,11 @@ With `spanish_dict.js` solve Spanish Dictionary, fast.
 
 
 ### Userscript: `quizlet.js`
-Navigate quizlet with easy using `quizlet.js`
+Navigate quizlet with ease using `quizlet.js`
 
 ### Features
-- WIP
+- Press 'c' to automatically select the correct answer in live.
+- Highlights the text showing which is the correct answer.
 
 
 
