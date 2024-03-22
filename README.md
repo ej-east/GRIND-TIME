@@ -47,7 +47,7 @@ With `spanish_dict.js` solve Spanish Dictionary, fast.
 Navigate quizlet with ease using `quizlet.js`
 
 ### Features
-- Press 'c' to automatically select the correct answer in live.
+- Press `c` to automatically select the correct answer in live.
 - Highlights the text showing which is the correct answer.
 
 
