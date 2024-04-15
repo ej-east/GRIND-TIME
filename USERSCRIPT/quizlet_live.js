@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Quizlet live cheat.
 // @author       Hallway || .5 Elijah
-// @match        https://quizlet.com/live
+// @match        https://quizlet.com/live/*
 // @grant    GM_openInTab
 // @grant    GM_setValue
 // ==/UserScript==
@@ -53,13 +53,13 @@ setInterval(() => {
 
     // Initialize a variable to hold the full game code
     var fullGameCode = '';
-    
+
     if (gameCodeInputs && (!this.gameCode || this.gameCode.length != 6)) {
         // Loop through each input element and concatenate its value
         gameCodeInputs.forEach(function(input) {
             fullGameCode += input.value;
         });
-        
+
         this.gameCode = fullGameCode;
         if (this.gameCode.length == 6) {
           hasCode = true;
@@ -67,9 +67,26 @@ setInterval(() => {
         }
     }
 
-    if (answerMap.length != 0) {
-        const promptElement = document.querySelector('.StudentPrompt-text');
+    // Quizlet made our jobs easier and gave us the code instead!
+    if (!this.gameCode) {
+        const container = document.querySelector('.cgk9vo'); // Select the container with the given class
 
+        if (!container) return;
+        const inputElements = container.querySelectorAll('input'); // Select all input elements within that container
+
+        let extractedText = '';
+        inputElements.forEach(input => {
+            extractedText += input.value; // Concatenate the value of each input to the string
+        });
+
+        this.gameCode = extractedText;
+        getQuizletCode(this.gameCode);
+    }
+
+
+    if (answerMap.length != 0) {
+        const promptElement = document.querySelector('.FormattedText');
+        
         if (promptElement) {
             var answer = answerMap[promptElement.textContent];
 
@@ -79,9 +96,11 @@ setInterval(() => {
             }
 
             if (answer) {
-                var answerOptions = document.querySelectorAll('.StudentAnswerOption-text');
+                const parentDiv = document.querySelector('.a97mxkn');
+
+                const textElements = parentDiv.querySelectorAll('.ajx7e1m');
                 // Loop through each element
-                answerOptions.forEach(function(option) {
+                textElements.forEach(function(option) {
                     if (option.textContent == answer) {
                         option.style.color = "rgb(255, 146, 92)"
                         if (autoAnswer) {
@@ -91,7 +110,7 @@ setInterval(() => {
                 });
             }
         }
-    } 
+    }
 }, 50); // Run every 50 ms for slow computers.
 
 document.addEventListener('keydown', (event) => {
