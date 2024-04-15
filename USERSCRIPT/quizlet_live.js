@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Quizlet live cheat.
-// @author       Hallway || .5 Elijah
+// @author       Hallway && .5 Elijah
 // @match        https://quizlet.com/live/*
 // @grant    GM_openInTab
 // @grant    GM_setValue
