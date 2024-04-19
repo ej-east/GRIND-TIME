@@ -3,8 +3,8 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Quizlet live cheat.
-// @author       Hallway && .5 Elijah
-// @match        https://quizlet.com/live/*
+// @author       Hallway || .5 Elijah
+// @match        https://quizlet.com/live
 // @grant    GM_openInTab
 // @grant    GM_setValue
 // ==/UserScript==
@@ -80,13 +80,16 @@ setInterval(() => {
         });
 
         this.gameCode = extractedText;
-        getQuizletCode(this.gameCode);
+
+        if (this.gameCode.length == 6) {
+            getQuizletCode(this.gameCode);
+        }
     }
 
 
     if (answerMap.length != 0) {
         const promptElement = document.querySelector('.FormattedText');
-        
+
         if (promptElement) {
             var answer = answerMap[promptElement.textContent];
 
