@@ -36,9 +36,8 @@
 
             if (event.key === ';') {
                 dataToSend = lastDataSent;
-                alert('Saved.');
+                console.log('Saved.');
             } else if (event.key === 'u') {
-                console.log('u pressed');
                 if (dataToSend) {                    
                 console.log('Sending data...');
                 socket.send(dataToSend);}
