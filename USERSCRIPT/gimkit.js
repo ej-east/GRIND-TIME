@@ -12,29 +12,114 @@
 (function() {
     'use strict';
     let socket = null;
-    let lastDataSent = null;
-    let dataToSend = null;
+    let lastPacket = null;
     let autoSendInterval = null;
-    let packetSpeed = 1000;
+    let packetSpeed = 15;
 
     function createUI() {
         const uiContainer = document.createElement('div');
         uiContainer.style.position = 'fixed';
-        uiContainer.style.top = '10px';
+        uiContainer.style.bottom = '10px';
         uiContainer.style.right = '10px';
-        uiContainer.style.backgroundColor = 'white';
+        uiContainer.style.backgroundColor = '#222'; 
         uiContainer.style.padding = '10px';
-        uiContainer.style.border = '1px solid black';
+        uiContainer.style.border = '1px solid #444'; 
         uiContainer.style.zIndex = '9999';
 
         uiContainer.innerHTML = `
-            <button id="savePacketButton">Save Last Packet</button>
-            <button id="sendPacketButton">Send Saved Packet</button>
-            <input type="range" id="packetSpeedSlider" min="100" max="2000" step="100" value="1000">
-            <label for="packetSpeedSlider">Packet Speed (ms)</label>
-            <span id="speedDisplay">Current Speed: 1000 ms</span>
-            <button id="startStopAutoSendButton">Start Auto-Send</button>
+            <button id="savePacketButton" style="background-color: #FF925C; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Save Last Packet</button>
+            <button id="sendPacketButton" style="background-color: #FF925C; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Send Saved Packet</button>
+            <button id="startStopAutoSendButton" style="background-color: #50C878; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Start Auto-Send</button>
+            <br>
+            <input type="range" id="packetSpeedSlider" min="1" max="30" step="1" value="15" style="width: 100%; background: linear-gradient(to right, #FF925C 0%, #FF925C 50%, #333 50%, #333 100%); height: 6px; border-radius: 5px; outline: none; transition: background 0.3s ease;">
+            <br>
+            <span id="speedDisplay" style="color: #EEE; font-size: 14px;">Packet send every 15 seconds.</span>
         `;
+
+        const buttons = uiContainer.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', () => {
+                if (button.id === 'startStopAutoSendButton') {
+                    if (autoSendInterval) {
+                        button.style.backgroundColor = '#A8323A'; 
+                    } else {
+                        button.style.backgroundColor = '#40A865'; 
+                    }
+                } else {
+                    button.style.backgroundColor = '#FF7A42'; 
+                }
+            });
+            button.addEventListener('mouseout', () => {
+                if (button.id === 'startStopAutoSendButton') {
+                    if (autoSendInterval) {
+                        button.style.backgroundColor = '#C41E3A'; 
+                    } else {
+                        button.style.backgroundColor = '#50C878'; 
+                    }
+                } else {
+                    button.style.backgroundColor = '#FF925C';
+                }
+            });
+        });
+
+        const slider = uiContainer.querySelector('#packetSpeedSlider');
+        slider.style.webkitAppearance = 'none';
+        slider.style.appearance = 'none';
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                border: 2px solid #FF925C;
+                border-radius: 50%;
+                background: #222;
+                cursor: pointer;
+                transition: background 0.3s ease, border 0.3s ease;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 20px;
+                height: 20px;
+                border: 2px solid #FF925C;
+                border-radius: 50%;
+                background: #222;
+                cursor: pointer;
+                transition: background 0.3s ease, border 0.3s ease;
+            }
+
+            input[type="range"]::-ms-thumb {
+                width: 20px;
+                height: 20px;
+                border: 2px solid #FF925C;
+                border-radius: 50%;
+                background: #222;
+                cursor: pointer;
+                transition: background 0.3s ease, border 0.3s ease;
+            }
+
+            input[type="range"]:hover::-webkit-slider-thumb {
+                border-color: #FF7A42;
+            }
+
+            input[type="range"]:hover::-moz-range-thumb {
+                border-color: #FF7A42;
+            }
+
+            input[type="range"]:hover::-ms-thumb {
+                border-color: #FF7A42;
+            }
+        `;
+        document.head.appendChild(style);
+
+        slider.addEventListener('input', () => {
+            const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+            slider.style.background = `linear-gradient(to right, #FF925C 0%, #FF925C ${value}%, #333 ${value}%, #333 100%)`;
+            document.getElementById('speedDisplay').innerText = `Packet send every ${slider.value} seconds.`;
+        });
+
         document.body.appendChild(uiContainer);
     }
 
@@ -42,7 +127,7 @@
         const originalSend = WebSocket.prototype.send;
         WebSocket.prototype.send = function(data) {
             originalSend.call(this, data);
-            lastDataSent = data;
+            lastPacket = data;
             socket = this;
         };
     }
@@ -50,68 +135,53 @@
     function setupKeydownListener() {
         document.onkeydown = event => {
             if (event.repeat) return;
-
             if (event.key === ';') {
-                dataToSend = lastDataSent;
-                console.log('Saved.');
-            } else if (event.key === 'u') {
-                if (dataToSend) {
-                    console.log('Sending data...');
-                    socket.send(dataToSend);
-                }
+                lastPacket = lastPacket;
+            } else if (event.key === 'u' && lastPacket) {
+                socket.send(lastPacket);
             }
         };
     }
 
     function setupUIHandlers() {
-        const savePacketButton = document.getElementById('savePacketButton');
-        const sendPacketButton = document.getElementById('sendPacketButton');
-        const packetSpeedSlider = document.getElementById('packetSpeedSlider');
-        const speedDisplay = document.getElementById('speedDisplay');
-        const startStopAutoSendButton = document.getElementById('startStopAutoSendButton');
-
-        savePacketButton.addEventListener('click', () => {
-            dataToSend = lastDataSent;
-            console.log('Packet saved.');
+        document.getElementById('savePacketButton').addEventListener('click', () => {
+            lastPacket = lastPacket;
         });
 
-        sendPacketButton.addEventListener('click', () => {
-            if (dataToSend) {
-                console.log('Sending saved packet...');
-                socket.send(dataToSend);
+        document.getElementById('sendPacketButton').addEventListener('click', () => {
+            if (lastPacket) {
+                socket.send(lastPacket);
             }
         });
 
-        packetSpeedSlider.addEventListener('input', (event) => {
+        document.getElementById('packetSpeedSlider').addEventListener('input', event => {
             packetSpeed = event.target.value;
-            speedDisplay.textContent = `Current Speed: ${packetSpeed} ms`;
+            document.getElementById('speedDisplay').textContent = `Packet send every ${packetSpeed} seconds.`;
             if (autoSendInterval) {
                 clearInterval(autoSendInterval);
                 autoSendInterval = setInterval(() => {
-                    if (dataToSend) {
-                        console.log('Automatically sending saved packet...');
-                        socket.send(dataToSend);
+                    if (lastPacket) {
+                        socket.send(lastPacket);
                     }
-                }, packetSpeed);
+                }, packetSpeed * 1000);
             }
-            console.log(`Packet speed set to ${packetSpeed} ms`);
         });
 
-        startStopAutoSendButton.addEventListener('click', () => {
+        document.getElementById('startStopAutoSendButton').addEventListener('click', () => {
+            const button = document.getElementById('startStopAutoSendButton');
             if (autoSendInterval) {
                 clearInterval(autoSendInterval);
                 autoSendInterval = null;
-                startStopAutoSendButton.textContent = 'Start Auto-Send';
-                console.log('Auto-send stopped.');
+                button.textContent = 'Start Auto-Send';
+                button.style.backgroundColor = '#50C878'; 
             } else {
                 autoSendInterval = setInterval(() => {
-                    if (dataToSend) {
-                        console.log('Automatically sending saved packet...');
-                        socket.send(dataToSend);
+                    if (lastPacket) {
+                        socket.send(lastPacket);
                     }
-                }, packetSpeed);
-                startStopAutoSendButton.textContent = 'Stop Auto-Send';
-                console.log('Auto-send started.');
+                }, packetSpeed * 1000);
+                button.textContent = 'Stop Auto-Send ';
+                button.style.backgroundColor = '#C41E3A'; 
             }
         });
     }
