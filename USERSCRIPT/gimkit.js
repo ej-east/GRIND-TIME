@@ -13,6 +13,7 @@
     'use strict';
     let socket = null;
     let lastPacket = null;
+    let packetToSend  = null;
     let autoSendInterval = null;
     let packetSpeed = 15;
 
@@ -136,21 +137,21 @@
         document.onkeydown = event => {
             if (event.repeat) return;
             if (event.key === ';') {
-                lastPacket = lastPacket;
-            } else if (event.key === 'u' && lastPacket) {
-                socket.send(lastPacket);
+                packetToSend = lastPacket;
+            } else if (event.key === 'u' && packetToSend) {
+                socket.send(packetToSend);
             }
         };
     }
 
     function setupUIHandlers() {
         document.getElementById('savePacketButton').addEventListener('click', () => {
-            lastPacket = lastPacket;
+            packetToSend = lastPacket;
         });
 
         document.getElementById('sendPacketButton').addEventListener('click', () => {
-            if (lastPacket) {
-                socket.send(lastPacket);
+            if (packetToSend) {
+                socket.send(packetToSend);
             }
         });
 
@@ -160,8 +161,8 @@
             if (autoSendInterval) {
                 clearInterval(autoSendInterval);
                 autoSendInterval = setInterval(() => {
-                    if (lastPacket) {
-                        socket.send(lastPacket);
+                    if (packetToSend) {
+                        socket.send(packetToSend);
                     }
                 }, packetSpeed * 1000);
             }
@@ -176,8 +177,8 @@
                 button.style.backgroundColor = '#50C878'; 
             } else {
                 autoSendInterval = setInterval(() => {
-                    if (lastPacket) {
-                        socket.send(lastPacket);
+                    if (packetToSend) {
+                        socket.send(packetToSend);
                     }
                 }, packetSpeed * 1000);
                 button.textContent = 'Stop Auto-Send ';
