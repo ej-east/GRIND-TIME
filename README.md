@@ -50,6 +50,14 @@ Navigate quizlet with ease using `quizlet.js`
 - Press `c` to automatically select the correct answer in live.
 - Highlights the text showing which is the correct answer.
 
+### Userscript: `gimkit.js`
+Answer one question, **win.**
 
+> [!CAUTION]
+> Gimkit has a built in "anticheat", just don't spam the send button or you will be kicked. This isn't cookie clicker
+
+### Features
+-  Press `h` to toggle the menu
+  
 
 Problem? Suggestion? Email me at `ej@williamelijah.com`
