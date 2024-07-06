@@ -6,6 +6,7 @@
 // @author       EJ
 // @match        https://*.blooket.com/*
 // @grant        none
+// @run-at document-end
 // ==/UserScript==
 
 
@@ -42,7 +43,7 @@
                         setTimeout(function() {
                             answer.click();
                             console.log("AUTO-CLICKED")
-                        }, 1000);
+                        }, 100);
                     }
 
                     if(highLightAnswer){
