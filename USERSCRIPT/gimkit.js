@@ -16,9 +16,9 @@
     let packetToSend  = null;
     let autoSendInterval = null;
     let packetSpeed = 15;
+    const uiContainer = document.createElement('div');
 
     function createUI() {
-        const uiContainer = document.createElement('div');
         uiContainer.style.position = 'fixed';
         uiContainer.style.bottom = '10px';
         uiContainer.style.right = '10px';
@@ -26,6 +26,9 @@
         uiContainer.style.padding = '10px';
         uiContainer.style.border = '1px solid #444'; 
         uiContainer.style.zIndex = '9999';
+
+
+        uiContainer.style.display = 'none';
 
         uiContainer.innerHTML = `
             <button id="savePacketButton" style="background-color: #FF925C; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Save Last Packet</button>
@@ -140,6 +143,12 @@
                 packetToSend = lastPacket;
             } else if (event.key === 'u' && packetToSend) {
                 socket.send(packetToSend);
+            } else if (event.key === 'h'){
+                if (uiContainer.style.display === 'none') {
+                    uiContainer.style.display = 'block';
+                } else {
+                    uiContainer.style.display = 'none';
+                }
             }
         };
     }
