@@ -13,11 +13,22 @@
     'use strict';
     let socket = null;
     let lastPacket = null;
-    let packetToSend  = null;
+    let packetsToSend  = new Set;
     let autoSendInterval = null;
     let packetSpeed = 15;
     const uiContainer = document.createElement('div');
 
+
+    function getRandomElementFromSet(set) {
+        const array = Array.from(set);
+        const randomIndex = Math.floor(Math.random() * array.length);
+
+        console.log(array)
+
+        return array[randomIndex];
+      }
+
+    
     function createUI() {
         uiContainer.style.position = 'fixed';
         uiContainer.style.bottom = '10px';
@@ -140,9 +151,9 @@
         document.onkeydown = event => {
             if (event.repeat) return;
             if (event.key === ';') {
-                packetToSend = lastPacket;
-            } else if (event.key === 'u' && packetToSend) {
-                socket.send(packetToSend);
+                packetsToSend.add(lastPacket);
+            } else if (event.key === 'u' && packetsToSend.length != 0 ) {
+                socket.send(getRandomElementFromSet(packetsToSend));
             } else if (event.key === 'h'){
                 if (uiContainer.style.display === 'none') {
                     uiContainer.style.display = 'block';
@@ -155,12 +166,12 @@
 
     function setupUIHandlers() {
         document.getElementById('savePacketButton').addEventListener('click', () => {
-            packetToSend = lastPacket;
+            packetsToSend.add(lastPacket);
         });
 
         document.getElementById('sendPacketButton').addEventListener('click', () => {
-            if (packetToSend) {
-                socket.send(packetToSend);
+            if (packetsToSend.length != 0 ) {
+                socket.send(getRandomElementFromSet(packetsToSend));
             }
         });
 
@@ -170,8 +181,8 @@
             if (autoSendInterval) {
                 clearInterval(autoSendInterval);
                 autoSendInterval = setInterval(() => {
-                    if (packetToSend) {
-                        socket.send(packetToSend);
+                    if (packetsToSend.length != 0) {
+                        socket.send(getRandomElementFromSet(packetsToSend));
                     }
                 }, packetSpeed * 1000);
             }
@@ -186,8 +197,8 @@
                 button.style.backgroundColor = '#50C878'; 
             } else {
                 autoSendInterval = setInterval(() => {
-                    if (packetToSend) {
-                        socket.send(packetToSend);
+                    if (packetsToSend.length != 0) {
+                        socket.send(getRandomElementFromSet(packetsToSend));
                     }
                 }, packetSpeed * 1000);
                 button.textContent = 'Stop Auto-Send ';
