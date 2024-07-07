@@ -60,7 +60,8 @@
             <br>
             <input type="range" id="packetSpeedSlider" min="1" max="30" step="1" value="15" style="width: 100%; background: linear-gradient(to right, #FF925C 0%, #A8577E 50%, #333 50%, #333 100%); height: 6px; border-radius: 5px; outline: none; transition: background 0.3s ease;">
             <br>
-            <span id="speedDisplay" style="color: #EEE; font-size: 14px;">Packet send every 15 seconds.</span>
+            <span id="speedDisplay" style="color: #EEE; font-size: 14px;">Packet send every 15 seconds.</span> 
+            <span id="packetCount" style="color: #EEE; font-size: 14px;margin-left: 105px;">Currently 0 packets in queue.</span>
         `;
 
         const buttons = uiContainer.querySelectorAll('button');
@@ -165,7 +166,9 @@
             if (event.key === ';') {
                 packetsToSend.add(lastPacket);
                 cycler = new SetCycler(packetsToSend);
-            } else if (event.key === 'u' && packetsToSend.length != 0 ) {
+                document.getElementById('packetCount').textContent = `Currently ${packetsToSend.size} packets in queue.`;
+
+            } else if (event.key === 'u' && packetsToSend.size != 0 ) {
                 packet = cycler.getNextItem()
                 socket.send(packet);
             } else if (event.key === 'h'){
@@ -186,8 +189,12 @@
             if (style && style.includes('display: block') && style.includes('white-space: nowrap')) {
                 const innerText = div.textContent.trim();
                 if (innerText && (innerText[0] === '+')) {
+                    console.log(innerText)
                     packetsToSend.add(lastPacket);
                     cycler = new SetCycler(packetsToSend);
+                    console.log(packetsToSend.size)
+
+                    document.getElementById('packetCount').textContent = `Currently ${packetsToSend.size} packets in queue.`;
                 }
             }
         });
@@ -197,10 +204,11 @@
         document.getElementById('savePacketButton').addEventListener('click', () => {
             packetsToSend.add(lastPacket);
             cycler = new SetCycler(packetsToSend);
+            document.getElementById('packetCount').textContent = `Currently ${packetsToSend.size} packets in queue.`;
         });
 
         document.getElementById('sendPacketButton').addEventListener('click', () => {
-            if (packetsToSend.length != 0 ) {
+            if (packetsToSend.size != 0 ) {
                 packet = cycler.getNextItem()
                 socket.send(packet);
             }
@@ -212,7 +220,7 @@
             if (autoSendInterval) {
                 clearInterval(autoSendInterval);
                 autoSendInterval = setInterval(() => {
-                    if (packetsToSend.length != 0) {
+                    if (packetsToSend.size != 0) {
                         packet = cycler.getNextItem()
                         socket.send(packet);
                     }
@@ -229,7 +237,7 @@
                 button.style.backgroundColor = '#50C878'; 
             } else {
                 autoSendInterval = setInterval(() => {
-                    if (packetsToSend.length != 0) {
+                    if (packetsToSend.size != 0) {
                         packet = cycler.getNextItem()
                         socket.send(packet);
                     }
