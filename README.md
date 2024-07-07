@@ -55,9 +55,12 @@ Answer one question, **win.**
 
 > [!CAUTION]
 > Gimkit has a built in "anticheat", just don't spam the send button or you will be kicked. This isn't cookie clicker
+> Teachers can see what questions you answer and don't, you should play along side it, so it can have a question bank of correct answers
 
 ### Features
 -  Press `h` to toggle the menu
+-  It will automatically record the data to be sent
+-  It can auto send at variable speeds to make it more believable
   
 
 Problem? Suggestion? Email me at `ej@williamelijah.com`
