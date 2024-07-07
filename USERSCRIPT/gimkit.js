@@ -32,8 +32,6 @@
         getNextItem() {
             const nextItem = this.items[this.index];
             this.index = (this.index + 1) % this.items.length;
-            console.log(this.index)
-            console.log(nextItem)
             return nextItem;
         }
     }
@@ -180,6 +178,21 @@
         };
     }
 
+    function logMoney() {
+        const divElements = document.querySelectorAll('div');
+        let matchedDivs = [];
+        divElements.forEach(div => {
+            const style = div.getAttribute('style');
+            if (style && style.includes('display: block') && style.includes('white-space: nowrap')) {
+                const innerText = div.textContent.trim();
+                if (innerText && (innerText[0] === '+')) {
+                    packetsToSend.add(lastPacket);
+                    cycler = new SetCycler(packetsToSend);
+                }
+            }
+        });
+    }
+
     function setupUIHandlers() {
         document.getElementById('savePacketButton').addEventListener('click', () => {
             packetsToSend.add(lastPacket);
@@ -232,5 +245,11 @@
         overrideWebSocketSend();
         setupKeydownListener();
         setupUIHandlers();
+
+
+        logMoney();
+
+        const observer = new MutationObserver(logMoney);
+        observer.observe(document.body, { childList: true, subtree: true });
     })();
 })();
