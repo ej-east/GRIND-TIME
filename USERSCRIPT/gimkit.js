@@ -58,7 +58,7 @@
             <button id="sendPacketButton" style="background-color: #FF925C; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Send Saved Packet</button>
             <button id="startStopAutoSendButton" style="background-color: #50C878; color: #EEE; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease;">Start Auto-Send</button>
             <br>
-            <input type="range" id="packetSpeedSlider" min="1" max="30" step="1" value="15" style="width: 100%; background: linear-gradient(to right, #FF925C 0%, #FF925C 50%, #333 50%, #333 100%); height: 6px; border-radius: 5px; outline: none; transition: background 0.3s ease;">
+            <input type="range" id="packetSpeedSlider" min="1" max="30" step="1" value="15" style="width: 100%; background: linear-gradient(to right, #FF925C 0%, #A8577E 50%, #333 50%, #333 100%); height: 6px; border-radius: 5px; outline: none; transition: background 0.3s ease;">
             <br>
             <span id="speedDisplay" style="color: #EEE; font-size: 14px;">Packet send every 15 seconds.</span>
         `;
@@ -143,7 +143,7 @@
 
         slider.addEventListener('input', () => {
             const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-            slider.style.background = `linear-gradient(to right, #FF925C 0%, #FF925C ${value}%, #333 ${value}%, #333 100%)`;
+            slider.style.background = `linear-gradient(to right, #FF925C 0%, #A8577E ${value}%, #333 ${value}%, #333 100%)`;
             document.getElementById('speedDisplay').innerText = `Packet send every ${slider.value} seconds.`;
         });
 
