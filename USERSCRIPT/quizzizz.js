@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Quizziz Cheat
 // @namespace    http://tampermonkey.net/
-// @version      2024-07-12
+// @version      1
 // @description  
 // @author       EJ
 // @match        https://quizizz.com/join*
@@ -40,6 +40,9 @@
             <input type="checkbox" id="toggleSwitch">
             <span class="slider"></span>
         </label>
+
+
+        <span id="currentAnswers">Current answer choice: nil </span>
         `;
 
 
