@@ -300,9 +300,7 @@
         let has_found = false;
         let is_warn = false;
 
-        console.log(cleanText(current_question.innerHTML))
         qaPair.forEach((pair) => {
-            console.log(cleanText(pair.question) == cleanText(current_question.innerHTML))
 
             if (cleanText(pair.question) == cleanText(current_question.innerHTML)) {
 
