@@ -285,7 +285,11 @@
         let is_warn = false;
     
         qaPair.forEach((pair) => {
-            if (pair.question.replace("&nbsp;", "") == current_question.innerHTML) {
+            if (pair.question
+                .replace("&nbsp;", "")
+                .replace("<span>", "")
+                .replace("<br>", "")
+                .replace("</span>", "") == current_question.innerHTML) {
                 if(has_found) {is_warn = true}
                 has_found = true;
                 elements.forEach((option) => {
