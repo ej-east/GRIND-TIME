@@ -287,9 +287,8 @@
         qaPair.forEach((pair) => {
             if (pair.question
                 .replace("&nbsp;", "")
-                .replace("<span>", "")
-                .replace("<br>", "")
-                .replace("</span>", "") == current_question.innerHTML) {
+                .replace(/<\/?[^>]+(>|$)/g, "")
+                == current_question.innerHTML.replace(/<\/?[^>]+(>|$)/g, "")) {
                 if(has_found) {is_warn = true}
                 has_found = true;
                 elements.forEach((option) => {
@@ -297,9 +296,7 @@
                         pair.answer.forEach((answer) => {
                             if (option.innerHTML.trim() == answer                
                                 .replace("&nbsp;", "")
-                                .replace("<span>", "")
-                                .replace("<br>", "")
-                                .replace("</span>", "")
+                                .replace(/<\/?[^>]+(>|$)/g, "")
                                 .trim()) {
                                 founds_answer.push(answer.trim())
                                 option.style.opacity = '0.5'; 
@@ -309,9 +306,7 @@
                     else if (typeof pair.answer === 'string') {
                         if (option.innerHTML.trim() == pair.answer
                             .replace("&nbsp;", "")
-                            .replace("<span>", "")
-                            .replace("<br>", "")
-                            .replace("</span>", "")
+                            .replace(/<\/?[^>]+(>|$)/g, "")
                             .trim()){
                             founds_answer.push(pair.answer.trim())
                             option.style.opacity = '0.5'; 
