@@ -235,7 +235,7 @@
                         }
                     });
                     
-                    qaPair.push({'question': question.structure.query.text, 'answer': textOptions})
+                    qaPair.push({'question': question.structure.query.text, 'answer': textOptions, 'type':question.type})
                 }
             
                 // Multi Selection (MSQ) and Multiple-choice (MCQ)
@@ -250,20 +250,22 @@
                             if (correctChoice.type === 'text') {
                                 textAnswers.push(correctChoice.text)
                             }
-                            qaPair.push({'question': question.structure.query.text, 'answer':textAnswers})
+                            qaPair.push({'question': question.structure.query.text, 'answer':textAnswers, 'type':question.type})
                         });
             
                     } else if (typeof answerIndex === 'number') {
                         const correctChoice = options[answerIndex];
             
                         if (correctChoice.type === 'text') {
-                            qaPair.push({'question': question.structure.query.text, 'answer': correctChoice.text})
+                            qaPair.push({'question': question.structure.query.text, 'answer': correctChoice.text, 'type':question.type})
                         }
                     }
                 }
 
             }
         );
+
+
         console.log(qaPair)
         parse_html()
 
@@ -294,8 +296,14 @@
 
             
             if (cleanText(pair.question) == cleanText(current_question.innerHTML)) {
+
+                if(pair.type == "BLANK"){
+                    founds_answer.push(pair.answer)
+                }
+
                 if(has_found) {is_warn = true}
                 has_found = true;
+
                 elements.forEach((option) => {
                     if (Array.isArray(pair.answer)) {
                         pair.answer.forEach((answer) => {
