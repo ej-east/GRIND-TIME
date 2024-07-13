@@ -287,7 +287,9 @@
         return input
             .replace(/&nbsp;/g, "")          // Remove all &nbsp; entities
             .replace(/<\/?[^>]+(>|$)/g, "")  // Remove all HTML tags
-            .replace(/"/g, "");              // Remove all double quotes
+            .replace(/"/g, "")               // Remove all double quotes
+            .replace("/=rac/g", "=\frac")
+            .replace(/\s/g, "");
     }
 
     function parse_html() {
@@ -297,10 +299,11 @@
         let current_question = elements[0];
         let has_found = false;
         let is_warn = false;
-    
-        qaPair.forEach((pair) => {
 
-            
+        console.log(cleanText(current_question.innerHTML))
+        qaPair.forEach((pair) => {
+            console.log(cleanText(pair.question) == cleanText(current_question.innerHTML))
+
             if (cleanText(pair.question) == cleanText(current_question.innerHTML)) {
 
                 if(pair.type == "BLANK"){
