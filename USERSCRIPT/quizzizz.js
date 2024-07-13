@@ -14,9 +14,11 @@
 
 
     const uiContainer = document.createElement('div');
+    const style = document.createElement('style');
+
 
     let qaPair =[];
-    let is_pin = true;
+    let is_pin = false;
     let user_input = null;
     let room_hash = null;
     let debounceTimeout = null;
@@ -32,22 +34,123 @@
         uiContainer.style.border = '1px solid #444'; 
         uiContainer.style.zIndex = '9999';
 
+        style.innerHTML = `
+        .input-group {
+            position: relative;
+        }
+
+        .input {
+            border: solid 1.5px #9e9e9e;
+            border-radius: 1rem;
+            background: none;
+            padding: 1rem;
+            font-size: 1rem;
+            color: #f5f5f5;
+            transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .user-label {
+            position: absolute;
+            left: 15px;
+            color: #e8e8e8;
+            pointer-events: none;
+            transform: translateY(1rem);
+            transition: 150ms cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .input:focus, input:valid {
+            outline: none;
+            border: 1.5px solid #FF925C;
+        }
+
+        .input:focus ~ label, input:valid ~ label {
+            transform: translateY(-50%) scale(0.8);
+            background-color: #212121;
+            padding: 0 .2em;
+            color: #FFB567;
+        }
+
+
+        .switch {
+            --secondary-container: #3a4b39;
+            --primary: #84da89;
+            font-size: 17px;
+            position: relative;
+            display: inline-block;
+            width: 3.7em;
+            height: 1.8em;
+        }
+
+        .switch input {
+            display: none;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #313033;
+            transition: .2s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 1.4em;
+            width: 1.4em;
+            border-radius: 20px;
+            left: 0.2em;
+            bottom: 0.2em;
+            background-color: #aeaaae;
+            transition: .4s;
+        }
+
+        input:checked + .slider::before {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider {
+            background-color: var(--secondary-container);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--secondary-container);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(1.9em);
+        }
+        `
+
+
         uiContainer.innerHTML = `
-        <form id="userForm" autocomplete="off">
-            <label for="roomHash">Input</label>
-            <input type="text" id="roomHash" name="roomHash" autocomplete="off">
-            <br>
-            <button type="submit">Submit</button>
+
+        <form id="userForm"  autocomplete="off">
+            <div class="input-group">
+                <input required="" type="text" id="roomHash" name="text" autocomplete="off" class="input" >
+                <label class="user-label" for="roomHash" id="hash-pin-label">Room Hash</label>
+            </div>
         </form>
 
+
         <label class="switch">
-            <input type="checkbox" id="toggleSwitch" checked>
+            <input type="checkbox" id="toggleSwitch">
             <span class="slider"></span>
         </label>
 
-        <span id="currentAnswers">Current answer choice: nil </span>
-        <span id="warn" style="color: red;"></span>
+        <span id="currentAnswers" style="color:#f5f5f5; white-space: normal">Current answer choice: nil </span>
+        <span id="warn" style="color: red;    font-weight: bold;"></span>
         `;
+
+
+        document.head.appendChild(style);
 
         const form = uiContainer.querySelector('#userForm');
         form.addEventListener('submit', (event) => {
@@ -62,6 +165,9 @@
         toggleSwitch.addEventListener('change', () => {
             is_pin = toggleSwitch.checked;
             console.log('Toggle state:', is_pin);
+            if (is_pin){document.getElementById("hash-pin-label").innerText = "Game Pin"}
+            else{document.getElementById("hash-pin-label").innerText = "Room Hash"}
+
         });
 
         document.body.appendChild(uiContainer);
@@ -179,7 +285,7 @@
         let is_warn = false;
     
         qaPair.forEach((pair) => {
-            if (pair.question == current_question.innerHTML) {
+            if (pair.question.replace("&nbsp;", "") == current_question.innerHTML) {
                 if(has_found) {is_warn = true}
                 has_found = true;
                 elements.forEach((option) => {
@@ -202,7 +308,7 @@
         });
 
         let answerString = founds_answer.join(', ')
-        document.getElementById('currentAnswers').innerHTML = `Current Answers: ${answerString}`
+        document.getElementById('currentAnswers').innerHTML = `Current Answers: <br>${answerString}`
 
         if(is_warn){
             document.getElementById('warn').innerHTML = `<br>DUPE WARNING TRIGGERED`
