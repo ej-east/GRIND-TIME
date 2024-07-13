@@ -33,6 +33,7 @@
         uiContainer.style.padding = '10px';
         uiContainer.style.border = '1px solid #444'; 
         uiContainer.style.zIndex = '9999';
+        uiContainer.style.opacity = '0.9'; 
 
 
         uiContainer.style.display = 'none';
