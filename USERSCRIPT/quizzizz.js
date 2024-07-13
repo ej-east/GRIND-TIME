@@ -221,8 +221,10 @@
 
             const questions = document_details.data.questions;
 
-            questions.forEach(question => {
+            // Clear Array 
+            qaPair = []
 
+            questions.forEach(question => {
                 // Skip slides
                 if (question.type === "SLIDEV2") {
                     return;
