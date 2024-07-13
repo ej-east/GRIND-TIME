@@ -34,6 +34,10 @@
         uiContainer.style.border = '1px solid #444'; 
         uiContainer.style.zIndex = '9999';
 
+
+        uiContainer.style.display = 'none';
+
+
         style.innerHTML = `
         .input-group {
             position: relative;
@@ -344,6 +348,20 @@
     }
 
 
+    function setupKeydownListener() {
+        document.onkeydown = event => {
+            if (event.repeat) return;
+            
+            if (event.key === 'h'){
+                if (uiContainer.style.display === 'none') {
+                    uiContainer.style.display = 'block';
+                } else {
+                    uiContainer.style.display = 'none';
+                }
+            }
+        }
+    }
+
     async function main(){        
         if(!user_input){return}
 
@@ -362,7 +380,8 @@
         const observer = new MutationObserver(debounce(parse_html, 500));
         observer.observe(document.body, { childList: true, subtree: true });
     }
-
     create_UI()
+    setupKeydownListener()
+
 
 })();
