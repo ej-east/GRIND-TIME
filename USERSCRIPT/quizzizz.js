@@ -369,7 +369,7 @@
 
         
         if (is_pin){
-            room_hash =  await fetch_Room_Data(user_input);
+            room_hash = await fetch_Room_Data(user_input);
         }else{
             room_hash = user_input;
         }
