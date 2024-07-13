@@ -295,14 +295,24 @@
                 elements.forEach((option) => {
                     if (Array.isArray(pair.answer)) {
                         pair.answer.forEach((answer) => {
-                            if (option.innerHTML.trim() == answer.trim()) {
+                            if (option.innerHTML.trim() == answer                
+                                .replace("&nbsp;", "")
+                                .replace("<span>", "")
+                                .replace("<br>", "")
+                                .replace("</span>", "")
+                                .trim()) {
                                 founds_answer.push(answer.trim())
                                 option.style.opacity = '0.5'; 
                             }
                         });
                     } 
                     else if (typeof pair.answer === 'string') {
-                        if (option.innerHTML.trim() == pair.answer.trim()) {
+                        if (option.innerHTML.trim() == pair.answer
+                            .replace("&nbsp;", "")
+                            .replace("<span>", "")
+                            .replace("<br>", "")
+                            .replace("</span>", "")
+                            .trim()){
                             founds_answer.push(pair.answer.trim())
                             option.style.opacity = '0.5'; 
                         }
