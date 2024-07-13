@@ -275,6 +275,12 @@
         }
     }
 
+    function cleanText(input) {
+        return input
+            .replace(/&nbsp;/g, "")          // Remove all &nbsp; entities
+            .replace(/<\/?[^>]+(>|$)/g, "")  // Remove all HTML tags
+            .replace(/"/g, "");              // Remove all double quotes
+    }
 
     function parse_html() {
         let elements = document.querySelectorAll('.resizeable.gap-x-2');
@@ -285,29 +291,22 @@
         let is_warn = false;
     
         qaPair.forEach((pair) => {
-            if (pair.question
-                .replace("&nbsp;", "")
-                .replace(/<\/?[^>]+(>|$)/g, "")
-                == current_question.innerHTML.replace(/<\/?[^>]+(>|$)/g, "")) {
+
+            
+            if (cleanText(pair.question) == cleanText(current_question.innerHTML)) {
                 if(has_found) {is_warn = true}
                 has_found = true;
                 elements.forEach((option) => {
                     if (Array.isArray(pair.answer)) {
                         pair.answer.forEach((answer) => {
-                            if (option.innerHTML.trim() == answer                
-                                .replace("&nbsp;", "")
-                                .replace(/<\/?[^>]+(>|$)/g, "")
-                                .trim()) {
+                            if (cleanText(option.innerHTML).trim() == cleanText(answer).trim()) {
                                 founds_answer.push(answer.trim())
                                 option.style.opacity = '0.5'; 
                             }
                         });
                     } 
                     else if (typeof pair.answer === 'string') {
-                        if (option.innerHTML.trim() == pair.answer
-                            .replace("&nbsp;", "")
-                            .replace(/<\/?[^>]+(>|$)/g, "")
-                            .trim()){
+                        if (cleanText(option.innerHTML).trim() == cleanText(pair.answer).trim()){
                             founds_answer.push(pair.answer.trim())
                             option.style.opacity = '0.5'; 
                         }
