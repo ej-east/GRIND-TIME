@@ -14,9 +14,13 @@
 
 
     const uiContainer = document.createElement('div');
-    let is_pin = false;
+
+    let qaPair =[];
+    let is_pin = true;
     let user_input = null;
     let room_hash = null;
+    let debounceTimeout = null;
+
 
 
     function create_UI(){
@@ -29,22 +33,21 @@
         uiContainer.style.zIndex = '9999';
 
         uiContainer.innerHTML = `
-        <form id="userForm">
+        <form id="userForm" autocomplete="off">
             <label for="roomHash">Input</label>
-            <input type="text" id="roomHash" name="roomHash">
+            <input type="text" id="roomHash" name="roomHash" autocomplete="off">
             <br>
             <button type="submit">Submit</button>
         </form>
 
         <label class="switch">
-            <input type="checkbox" id="toggleSwitch">
+            <input type="checkbox" id="toggleSwitch" checked>
             <span class="slider"></span>
         </label>
 
-
         <span id="currentAnswers">Current answer choice: nil </span>
+        <span id="warn" style="color: red;"></span>
         `;
-
 
         const form = uiContainer.querySelector('#userForm');
         form.addEventListener('submit', (event) => {
@@ -110,8 +113,6 @@
 
             questions.forEach(question => {
 
-                console.log(question.structure.query.text)
-
                 // Skip slides
                 if (question.type === "SLIDEV2") {
                     return;
@@ -120,45 +121,45 @@
                 // Writing question
                 else if (question.type === "BLANK") {
                     const options = question.structure.options;
+                    let textOptions = [];
             
                     options.forEach(option => {
                         if (option.type === 'text') {
-                            console.log(option.text);
+                            textOptions.push(option.text);
                         }
                     });
-            
-                    console.log('='.repeat(25));
+                    
+                    qaPair.push({'question': question.structure.query.text, 'answer': textOptions})
                 }
             
                 // Multi Selection (MSQ) and Multiple-choice (MCQ)
                 else if (question.type === "MSQ" || question.type === "MCQ") {
                     const answerIndex = question.structure.answer;
                     const options = question.structure.options;
-            
-                    console.log(answerIndex, typeof answerIndex);
-            
+                    let textAnswers = [];
+
                     if (Array.isArray(answerIndex)) {
                         answerIndex.forEach(index => {
                             const correctChoice = options[index];
                             if (correctChoice.type === 'text') {
-                                console.log(index);
-                                console.log(correctChoice.text);
+                                textAnswers.push(correctChoice.text)
                             }
+                            qaPair.push({'question': question.structure.query.text, 'answer':textAnswers})
                         });
             
-                        console.log('='.repeat(25));
                     } else if (typeof answerIndex === 'number') {
                         const correctChoice = options[answerIndex];
             
                         if (correctChoice.type === 'text') {
-                            console.log(answerIndex);
-                            console.log(correctChoice.text);
-                            console.log('='.repeat(25));
+                            qaPair.push({'question': question.structure.query.text, 'answer': correctChoice.text})
                         }
                     }
                 }
-            });
 
+            }
+        );
+        console.log(qaPair)
+        parse_html()
 
 
 
@@ -168,6 +169,57 @@
         }
     }
 
+
+    function parse_html() {
+        let elements = document.querySelectorAll('.resizeable.gap-x-2');
+    
+        let founds_answer = [];
+        let current_question = elements[0];
+        let has_found = false;
+        let is_warn = false;
+    
+        qaPair.forEach((pair) => {
+            if (pair.question == current_question.innerHTML) {
+                if(has_found) {is_warn = true}
+                has_found = true;
+                elements.forEach((option) => {
+                    if (Array.isArray(pair.answer)) {
+                        pair.answer.forEach((answer) => {
+                            if (option.innerHTML.trim() == answer.trim()) {
+                                founds_answer.push(answer.trim())
+                                option.style.opacity = '0.5'; 
+                            }
+                        });
+                    } 
+                    else if (typeof pair.answer === 'string') {
+                        if (option.innerHTML.trim() == pair.answer.trim()) {
+                            founds_answer.push(pair.answer.trim())
+                            option.style.opacity = '0.5'; 
+                        }
+                    }
+                });
+            }
+        });
+
+        let answerString = founds_answer.join(', ')
+        document.getElementById('currentAnswers').innerHTML = `Current Answers: ${answerString}`
+
+        if(is_warn){
+            document.getElementById('warn').innerHTML = `<br>DUPE WARNING TRIGGERED`
+        }else{document.getElementById('warn').innerHTML = ``}
+
+    }
+    
+    function debounce(func, wait) {
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(debounceTimeout);
+                func(...args);
+            };
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(later, wait);
+        };
+    }
 
 
     async function main(){        
@@ -183,7 +235,12 @@
         if(!room_hash){return}
         fetch_Room_Answers(room_hash)
 
+
+
+        const observer = new MutationObserver(debounce(parse_html, 500));
+        observer.observe(document.body, { childList: true, subtree: true });
     }
 
     create_UI()
+
 })();
