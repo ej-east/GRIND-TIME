@@ -145,7 +145,7 @@
             <span class="slider"></span>
         </label>
 
-        <span id="currentAnswers" style="color:#f5f5f5; white-space: normal">Current answer choice: nil </span>
+        <span id="currentAnswers" style="color:#f5f5f5; white-space: normal">Correct answer: nil </span>
         <span id="warn" style="color: red;    font-weight: bold;"></span>
         `;
 
@@ -322,7 +322,7 @@
         });
 
         let answerString = founds_answer.join(', ')
-        document.getElementById('currentAnswers').innerHTML = `Current Answers: <br>${answerString}`
+        document.getElementById('currentAnswers').innerHTML = `Correct Answers: <br><span style="color:#FF925C">${answerString}</span>`
 
         if(is_warn){
             document.getElementById('warn').innerHTML = `<br>DUPE WARNING TRIGGERED`
