@@ -4,7 +4,7 @@
 // @version      1
 // @description  Kahoot Solver
 // @author       EJ
-// @match        https://kahoot.it/challenge/?quiz-id=158b2e35-ad9e-48c7-8088-ea2a290f859c&single-player=true
+// @match        https://kahoot.it/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=kahoot.it
 // @grant        none
 // ==/UserScript==
@@ -80,7 +80,7 @@
                     <div>
                         <p><span style="color: red;">Question:</span> ${topQuestion.question}</p>
                         <p><span style="color: red;">Answer:</span> ${topQuestion.answer}</p>
-                        <button id="triggerButton">Trigger Function</button>
+                        <button id="triggerButton">Reval on screen</button>
                     </div>
                 `;
                 document.getElementById('triggerButton').addEventListener('click', function() {
@@ -156,7 +156,7 @@
     }
 
     function showOnButton(index){
-        const buttonsNodeList = document.querySelectorAll('button');
+        const buttonsNodeList = document.querySelectorAll('button.ixIlpW');
         buttonsNodeList[index].style.opacity = '0.5'
     }
 
