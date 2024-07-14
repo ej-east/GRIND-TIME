@@ -11,13 +11,89 @@
 
 (function() {
     'use strict';
+
+    const uiContainer = document.createElement('div');
+
     let answer_array = [];
-    const quiz = '1ebb37d9-c492-4df7-8213-92207bdf62b0';
+    let quiz_id = null;
+    let parsed = null;
+    //let quiz_id = '1ebb37d9-c492-4df7-8213-92207bdf62b0';
+
+
+    function createUI(){
+        uiContainer.style.position = 'fixed';
+        uiContainer.style.top = '10px';
+        uiContainer.style.right = '10px';
+        uiContainer.style.backgroundColor = '#222'; 
+        uiContainer.style.padding = '10px';
+        uiContainer.style.border = '1px solid #444'; 
+        uiContainer.style.zIndex = '9999';
+
+
+        //uiContainer.style.display = 'none';
+
+        uiContainer.innerHTML = `
+            <h1 style="color: #fff;">Quiz Helper</h1>
+            <form id="quizForm">
+                <label for="quizID" style="color: #fff;">Quiz ID:</label>
+                <input type="text" id="quizID" name="quizID"><br><br>
+                <button type="submit">Update Quiz ID</button>
+            </form>
+            <br>
+            <label for="search" style="color: #fff;">Search Questions:</label>
+            <input type="text" id="search" name="search">
+            <div id="results" style="color: #fff;"></div>
+        `;
+
+
+        document.body.appendChild(uiContainer);
+
+
+        document.getElementById('quizForm').addEventListener('submit', function(event){
+            event.preventDefault();
+            quiz_id = document.getElementById('quizID').value;
+
+            if (quiz_id.trim() == ""){return;}
+            main(quiz_id)
+        });
+
+        // Add event listener to the search input
+        document.getElementById('search').addEventListener('input', function(event){
+            const searchQuery = event.target.value.toLowerCase();
+            if (!quiz_id){
+                document.getElementById('results').innerHTML = `<span style="color: red;">First submit a QuizID!</span>`;
+                return;
+            }
+
+            const filteredQuestions = parsed.filter(q => q.question.toLowerCase().includes(searchQuery));
+            displayTopResult(filteredQuestions);
+
+        });
+    }
+
+        // Function to display the search results
+        function displayTopResult(questions) {
+            const resultsContainer = document.getElementById('results');
+            if (questions.length > 0) {
+                const topQuestion = questions[0];
+                resultsContainer.innerHTML = `
+                    <div>
+                        <p><span style="color: red;">Question:</span> ${topQuestion.question}</p>
+                        <p><span style="color: red;">Answer:</span> ${topQuestion.answer}</p>
+                        <button id="triggerButton">Trigger Function</button>
+                    </div>
+                `;
+                document.getElementById('triggerButton').addEventListener('click', function() {
+                    showOnButton(topQuestion.index);
+                });
+            } else {
+                resultsContainer.innerHTML = `<p>No results found</p>`;
+            }
+        }
 
     async function fetchKahoot(quizID) {
         const response = await fetch(`https://kahoot.it/rest/kahoots/${quizID}`);
         const data = await response.json();
-        console.log('Fetched Kahoot Data:', data);
         return data;
     }
 
@@ -84,14 +160,11 @@
         buttonsNodeList[index].style.opacity = '0.5'
     }
 
-    async function main() {
+    async function main(quiz) {
         let data = await fetchKahoot(quiz);
-        let parsed = getCorrectAnswers(data);
+        parsed = getCorrectAnswers(data);
         console.log(parsed);
-
-
-
     }
 
-    main();
+    createUI();
 })();
