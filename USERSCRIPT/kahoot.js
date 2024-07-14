@@ -30,7 +30,7 @@
         uiContainer.style.zIndex = '9999';
 
 
-        //uiContainer.style.display = 'none';
+        uiContainer.style.display = 'none';
 
         uiContainer.innerHTML = `
             <h1 style="color: #fff;">Quiz Helper</h1>
@@ -160,6 +160,20 @@
         buttonsNodeList[index].style.opacity = '0.5'
     }
 
+    function setupKeydownListener() {
+        document.onkeydown = event => {
+            if (event.repeat) return;
+            
+            if (event.key === 'h'){
+                if (uiContainer.style.display === 'none') {
+                    uiContainer.style.display = 'block';
+                } else {
+                    uiContainer.style.display = 'none';
+                }
+            }
+        }
+    }
+
     async function main(quiz) {
         let data = await fetchKahoot(quiz);
         parsed = getCorrectAnswers(data);
@@ -167,4 +181,5 @@
     }
 
     createUI();
+    setupKeydownListener();
 })();
