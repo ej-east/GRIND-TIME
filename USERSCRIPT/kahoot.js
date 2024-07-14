@@ -164,6 +164,12 @@
         document.onkeydown = event => {
             if (event.repeat) return;
             
+
+            const activeElement = document.activeElement;
+            if (activeElement.tagName.toLowerCase() === 'input' || activeElement.tagName.toLowerCase() === 'textarea') {
+                return; // Do nothing if typing in an input or textarea
+            }
+            
             if (event.key === 'h'){
                 if (uiContainer.style.display === 'none') {
                     uiContainer.style.display = 'block';
