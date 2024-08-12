@@ -242,7 +242,7 @@
                         }
                     });
                     
-                    qaPair.push({'question': question.structure.query.text, 'answer': textOptions, 'type':question.type})
+                    qaPair.push({'question': question.structure.query.text, 'answer':textOptions, 'type':question.type, 'id':question._id})
                 }
             
                 // Multi Selection (MSQ) and Multiple-choice (MCQ)
@@ -257,14 +257,14 @@
                             if (correctChoice.type === 'text') {
                                 textAnswers.push(correctChoice.text)
                             }
-                            qaPair.push({'question': question.structure.query.text, 'answer':textAnswers, 'type':question.type})
+                            qaPair.push({'question': question.structure.query.text, 'answer':textAnswers, 'type':question.type, 'id':question._id})
                         });
             
                     } else if (typeof answerIndex === 'number') {
                         const correctChoice = options[answerIndex];
             
                         if (correctChoice.type === 'text') {
-                            qaPair.push({'question': question.structure.query.text, 'answer': correctChoice.text, 'type':question.type})
+                            qaPair.push({'question': question.structure.query.text, 'answer':correctChoice, 'type':question.type, 'id':question._id})
                         }
                     }
                 }
