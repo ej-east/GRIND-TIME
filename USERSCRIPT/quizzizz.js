@@ -18,12 +18,76 @@
 
 
     let qaPair =[];
+    let quiz_name = null;
     let is_pin = false;
     let user_input = null;
     let room_hash = null;
     let debounceTimeout = null;
 
-
+    function displayQAContent() {
+        // Check if quiz_name and qa array exist
+        if (!quiz_name || !Array.isArray(qaPair) || qaPair.length === 0) {
+            console.error("Error: Quiz name or questions/answers are missing.");
+            return;
+        }
+    
+        // Open about:blank
+        const newWindow = window.open('about:blank', '_blank');
+    
+        // Create basic HTML structure
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${quiz_name}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .qa-item { margin-bottom: 20px; font-weight: bold; color: #333; }
+                    .qa-item .qa-question { color: #0066cc; }
+                    .qa-item .qa-id { color: #555; }
+                    .qa-item .qa-answer { color: red; margin-left: 10px; }
+                    .quiz-title { margin-bottom: 40px; color: #333; }
+                </style>
+            </head>
+            <body>
+                <h1 class="quiz-title">${quiz_name}</h1>
+                <hr>
+                <div id="qa-container"></div>
+            </body>
+            </html>
+        `;
+    
+        // Write the HTML content to the new window
+        newWindow.document.write(htmlContent);
+    
+        // Select the container where QA items will be displayed
+        const container = newWindow.document.getElementById('qa-container');
+    
+        // Loop through the qa array and append items to the container
+        qaPair.forEach(item => {
+            const qaItem = newWindow.document.createElement('div');
+            qaItem.className = 'qa-item';
+            
+            qaItem.innerHTML = `
+                <p>
+                    <h2 class="qa-question">Question: ${cleanText(item.question)}</h2> 
+                    <h4 class="qa-answer">Answer: ${cleanText(item.answer)}</h4>
+                    <br>
+                
+                </p>
+            `;
+            
+            container.appendChild(qaItem);
+        });
+    
+        newWindow.document.close();
+    }
+    
+    
+    
+    
 
     function create_UI(){
         uiContainer.style.position = 'fixed';
@@ -150,6 +214,8 @@
             <span class="slider"></span>
         </label>
 
+        <button id="showReportButton" style="color: #f5f5f5; text-align: right; white-space: normal;">Show Report</button>
+        <br>
         <span id="currentAnswers" style="color:#f5f5f5; white-space: normal">Correct answer: nil </span>
         <span id="warn" style="color: red;    font-weight: bold;"></span>
         `;
@@ -174,6 +240,9 @@
             else{document.getElementById("hash-pin-label").innerText = "Room Hash"}
 
         });
+
+        const showReportButton = uiContainer.querySelector('#showReportButton');
+        showReportButton.addEventListener('click', displayQAContent);
 
         document.body.appendChild(uiContainer);
     }
@@ -223,7 +292,9 @@
             const questions = document_details.data.questions;
 
             // Clear Array 
+
             qaPair = []
+            quiz_name = document_details.data.quizName
 
             questions.forEach(question => {
                 // Skip slides
@@ -254,17 +325,20 @@
                     if (Array.isArray(answerIndex)) {
                         answerIndex.forEach(index => {
                             const correctChoice = options[index];
+                            const answerText = correctChoice.text || correctChoice.answers.text;
                             if (correctChoice.type === 'text') {
-                                textAnswers.push(correctChoice.text)
+                                corr
+                                textAnswers.push(answerText)
                             }
                             qaPair.push({'question': question.structure.query.text, 'answer':textAnswers, 'type':question.type, 'id':question._id})
                         });
             
                     } else if (typeof answerIndex === 'number') {
                         const correctChoice = options[answerIndex];
+                        const answerText = correctChoice.text || correctChoice.answers.text
             
                         if (correctChoice.type === 'text') {
-                            qaPair.push({'question': question.structure.query.text, 'answer':correctChoice, 'type':question.type, 'id':question._id})
+                            qaPair.push({'question': question.structure.query.text, 'answer':answerText, 'type':question.type, 'id':question._id})
                         }
                     }
                 }
